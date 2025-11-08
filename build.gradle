@@ -1,0 +1,60 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.7'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.workus'
+version = '0.0.1-SNAPSHOT'
+description = 'workus project'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	querydslVersion = '5.1.0'
+}
+
+dependencies {
+	//web
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// datasource
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	// implementation 'org.flywaydb:flyway-core'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// scheduler
+	implementation 'org.springframework.boot:spring-boot-starter-quartz'
+	//test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//annotation processor
+	annotationProcessor "com.querydsl:querydsl-apt:${querydslVersion}:jakarta"
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+// 컴파일 시 Q 클래스 자동 생성 설정
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs += [
+			'-Aquerydsl.entityAccessors=true'
+	]
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

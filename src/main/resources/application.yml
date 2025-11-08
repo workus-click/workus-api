@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: workus
+  profiles:
+    default: local   #기본 프로필을 local로 지정
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none        #스키마 변경은 Flyway로 관리
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+        jdbc.time_zone: Asia/Seoul
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations:
+      - classpath:db/migration
+
+  quartz:
+    job-store-type: jdbc               # JDBC JobStore (DB 영속화)
+    jdbc:
+      initialize-schema: never         # Flyway로 Quartz 테이블 생성하므로 never
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: workusQuartzScheduler
+            instanceId: AUTO
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRTZ_
+            useProperties: true
+            misfireThreshold: 60000
+            isClustered: true             # 클러스터 모드 (여러 서버 중 1대만 실행)
+            clusterCheckinInterval: 15000 # ms 단위 (기본 15초)
+            dataSource: quartzDS
+          dataSource:
+            quartzDS:
+              provider: hikaricp
+              driver: org.mariadb.jdbc.Driver
+              maxConnections: 10
+          plugin:
+            shutdownHook:
+              class: org.quartz.plugins.management.ShutdownHookPlugin
+              cleanShutdown: true
+
+server:
+  shutdown: graceful
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,metrics,threaddump,heapdump
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+
+logging:
+  level:
+    com.workus: info
+    org.hibernate.SQL: off
+    org.hibernate.orm.jdbc.bind: off
+
+

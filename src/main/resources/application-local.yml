@@ -1,0 +1,46 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:mariadb://localhost:13306/dev_test?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+    username: workus-dev
+    password: workus-dev
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      pool-name: workus-pool
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000
+      connection-timeout: 30000
+
+  data:
+    redis:
+      host: localhost
+      port: 16379
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        generate_statistics: false
+
+  quartz:
+    properties:
+      org:
+        quartz:
+          dataSource:
+            quartzDS:
+              URL: jdbc:mariadb://localhost:13306/dev_test
+              user: workus-dev
+              password: workus-dev
+              maxConnections: 10
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
