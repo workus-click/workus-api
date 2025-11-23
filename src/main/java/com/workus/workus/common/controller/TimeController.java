@@ -17,6 +17,10 @@ public class TimeController {
 	public Map<String, String> getServerTime() {
 		ZonedDateTime now = ZonedDateTime.now();
         log.info(now.toString());
+        log.info(now.toString());
+        log.info(now.toString());
+        log.info(now.toString());
+        log.info(now.toString());
 		return Map.of("serverTime", now.toString());
 	}
 }
