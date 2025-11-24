@@ -2,11 +2,12 @@ spring:
   config:
     activate:
       on-profile: local
+    import: "optional:file:.env[.properties]"
 
   datasource:
-    url: jdbc:mariadb://localhost:13306/dev_test?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
-    username: workus-dev
-    password: workus-dev
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:
       pool-name: workus-pool
@@ -32,9 +33,9 @@ spring:
         quartz:
           dataSource:
             quartzDS:
-              URL: jdbc:mariadb://localhost:13306/dev_test
-              user: workus-dev
-              password: workus-dev
+              URL: ${DB_URL}
+              user: ${DB_USER}
+              password: ${DB_PASSWORD}
               maxConnections: 10
 
 server:
