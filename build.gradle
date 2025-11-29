@@ -37,6 +37,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	// scheduler
 	implementation 'org.springframework.boot:spring-boot-starter-quartz'
+
+	// utils
+	implementation 'com.github.f4b6a3:tsid-creator:5.2.6'
+
 	//test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -59,5 +63,4 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('test') {
 	useJUnitPlatform()
-	enabled = false
 }
