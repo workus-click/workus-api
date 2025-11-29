@@ -73,4 +73,9 @@ logging:
     org.hibernate.SQL: off
     org.hibernate.orm.jdbc.bind: off
 
+id:
+  generator:
+    tsid:
+      epoch: 2025-01-01T00:00:00Z
+      node-bits: 8
 
