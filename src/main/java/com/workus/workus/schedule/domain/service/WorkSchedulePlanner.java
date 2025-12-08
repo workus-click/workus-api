@@ -27,7 +27,7 @@ public class WorkSchedulePlanner {
 
     private void validateNew(WorkSchedule candidate, Collection<WorkSchedule> aroundSchedules) {
         if (!isSchedulable(candidate, aroundSchedules)) {
-            throw new ScheduleConflictException("전일/당일/익일 스케줄과 시간이 겹칩니다.");
+            throw new ScheduleConflictException();
         }
     }
 

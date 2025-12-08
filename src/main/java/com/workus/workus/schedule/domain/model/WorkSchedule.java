@@ -3,6 +3,7 @@ package com.workus.workus.schedule.domain.model;
 
 import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.common.entity.BaseEntity;
+import com.workus.workus.schedule.domain.exception.BreakTimeOutOfWorkTimeRangeException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -102,7 +103,7 @@ public class WorkSchedule extends BaseEntity {
         DateTimeRange breakInterval = getBreakDateTime();
 
         if(!breakInterval.isWithinRange(workDateTime)){
-            throw new IllegalStateException("휴게시간은 근무시간 범위 안에 있어야 합니다.");
+            throw new BreakTimeOutOfWorkTimeRangeException();
         }
     }
     private void setWorkTime(TimeRange newWorkTime){
