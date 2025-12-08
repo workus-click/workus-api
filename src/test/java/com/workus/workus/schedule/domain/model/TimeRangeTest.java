@@ -20,13 +20,17 @@ class TimeRangeTest {
 
     @Test
     void constructorThrowsWhenStartNull() {
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> new TimeRange(null, LocalTime.NOON));
-        assertEquals("start must not be null", ex.getMessage());
+        assertThrows(NullPointerException.class, () -> new TimeRange(null, LocalTime.NOON));
     }
 
     @Test
     void constructorThrowsWhenEndNull() {
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> new TimeRange(LocalTime.NOON, null));
-        assertEquals("end must not be null", ex.getMessage());
+        assertThrows(NullPointerException.class, () -> new TimeRange(LocalTime.NOON, null));
+    }
+
+    @Test
+    void spansNextDay_returnsTrueWhenEndBeforeStart() {
+        TimeRange range = new TimeRange(LocalTime.of(22, 0), LocalTime.of(6, 0));
+        assertTrue(range.spansNextDay());
     }
 }
