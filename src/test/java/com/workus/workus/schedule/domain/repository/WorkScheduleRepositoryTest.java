@@ -29,7 +29,7 @@ class WorkScheduleRepositoryTest {
                 LocalDate.now(),                                  // storeUserId
                 new TimeRange(LocalTime.of(5, 0), LocalTime.of(14, 0)), // scheduleDate
                 new TimeRange(LocalTime.of(11, 0), LocalTime.of(12, 0)),
-                WorkScheduleSource.USER,
+                WorkScheduleSource.MANUAL,
                 null
         );
         // when: 저장
