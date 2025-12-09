@@ -1,5 +1,6 @@
 package com.workus.workus.schedule.domain.service;
 
+import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.schedule.domain.exception.ScheduleConflictException;
 import com.workus.workus.schedule.domain.model.WorkSchedule;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,8 @@ public class WorkSchedulePlanner {
             Collection<WorkSchedule> aroundSchedules
     ) {
         WorkSchedule candidate = new WorkSchedule(
-                param.storeUserId()
+                IdGenerator.nextId()
+                , param.storeUserId()
                 , param.scheduleDate()
                 , param.workTime()
                 , param.breakTime()

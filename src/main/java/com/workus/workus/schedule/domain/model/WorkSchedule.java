@@ -41,6 +41,7 @@ public class WorkSchedule extends BaseEntity {
     private Long workTimeId;          // nullable
 
     public WorkSchedule(
+            Long workScheduleId,
             Long storeUserId,
             LocalDate scheduleDate,
             TimeRange workTime,
@@ -48,7 +49,7 @@ public class WorkSchedule extends BaseEntity {
             WorkScheduleSource source,
             Long workTimeId
     ) {
-        this.workScheduleId = IdGenerator.nextId();
+        this.workScheduleId = Objects.requireNonNull(workScheduleId);
         this.storeUserId = Objects.requireNonNull(storeUserId);
         this.scheduleDate = Objects.requireNonNull(scheduleDate);
         this.source = Objects.requireNonNull(source);
