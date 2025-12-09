@@ -1,9 +1,10 @@
 package com.workus.workus.schedule.domain.model;
 
 
-import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.common.entity.BaseEntity;
+import com.workus.workus.schedule.domain.exception.AutoSourceRequiresWorkTimeIdException;
 import com.workus.workus.schedule.domain.exception.BreakTimeOutOfWorkTimeRangeException;
+import com.workus.workus.schedule.domain.exception.ManualSourceMustNotHaveWorkTimeIdException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -58,17 +59,40 @@ public class WorkSchedule extends BaseEntity {
         this.workTimeId = workTimeId;
 
         validateBreakWithinWork();
+        validateWorkTimeSourcePolicy();
     }
 
     public Long getId(){
         return workScheduleId;
     }
 
-    public void changeWorkTime(TimeRange newWorkTime) {
-        if(!hasBreakTime() || getBreakDateTime().isWithinRange(getDateTime(newWorkTime))){
-            setWorkTime(newWorkTime);
+    public boolean canChangeWorkTime(TimeRange newWorkTime) {
+        if(!hasBreakTime()) {
+            return true;
         }
+        return getBreakDateTime().isWithinRange(getDateTime(newWorkTime));
     }
+    public void changeWorkTime(TimeRange newWorkTime) {
+        Objects.requireNonNull(newWorkTime);
+        if(!canChangeWorkTime(newWorkTime)){
+            throw new BreakTimeOutOfWorkTimeRangeException();
+        }
+        this.workTime = newWorkTime;
+    }
+
+    public boolean canChangeBreakTime(TimeRange newBreakTime) {
+        if(newBreakTime == null){
+            return true;
+        }
+        return getDateTime(newBreakTime).isWithinRange(getWorkDateTime());
+    }
+    public void changeBreakTime(TimeRange newBreakTime) {
+        if(!canChangeBreakTime(newBreakTime)){
+            throw new BreakTimeOutOfWorkTimeRangeException();
+        }
+        this.breakTime = newBreakTime;
+    }
+
     public boolean workTimeOverlaps(WorkSchedule otherSchedule) {
         // [start, end) 기준 겹침 검사
         return !this.getWorkDateTime().overlaps(otherSchedule.getWorkDateTime());
@@ -107,8 +131,14 @@ public class WorkSchedule extends BaseEntity {
             throw new BreakTimeOutOfWorkTimeRangeException();
         }
     }
-    private void setWorkTime(TimeRange newWorkTime){
-        Objects.requireNonNull(newWorkTime);
-        this.workTime = newWorkTime;
+    private void validateWorkTimeSourcePolicy() {
+        if (source == WorkScheduleSource.AUTO && workTimeId == null) {
+            throw new AutoSourceRequiresWorkTimeIdException();
+        }
+
+        if (source == WorkScheduleSource.MANUAL && workTimeId != null) {
+            throw new ManualSourceMustNotHaveWorkTimeIdException();
+        }
     }
+
 }
