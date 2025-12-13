@@ -67,13 +67,13 @@ public class WorkSchedule extends BaseEntity {
     }
 
     public boolean canChangeWorkTime(TimeRange newWorkTime) {
+        Objects.requireNonNull(newWorkTime);
         if(!hasBreakTime()) {
             return true;
         }
         return getBreakDateTime().isWithinRange(getDateTime(newWorkTime));
     }
     public void changeWorkTime(TimeRange newWorkTime) {
-        Objects.requireNonNull(newWorkTime);
         if(!canChangeWorkTime(newWorkTime)){
             throw new BreakTimeOutOfWorkTimeRangeException();
         }
@@ -95,7 +95,7 @@ public class WorkSchedule extends BaseEntity {
 
     public boolean workTimeOverlaps(WorkSchedule otherSchedule) {
         // [start, end) 기준 겹침 검사
-        return !this.getWorkDateTime().overlaps(otherSchedule.getWorkDateTime());
+        return this.getWorkDateTime().overlaps(otherSchedule.getWorkDateTime());
     }
     public boolean isOvernightWork() {;
         return workTime.spansNextDay();
