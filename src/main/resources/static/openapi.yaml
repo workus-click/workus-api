@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: Workus API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/auth/check-id:
+    $ref: './openapi/auth.yaml#/paths/~1api~1auth~1check-id'
+  /api/auth/signup:
+    $ref: './openapi/auth.yaml#/paths/~1api~1auth~1signup'
