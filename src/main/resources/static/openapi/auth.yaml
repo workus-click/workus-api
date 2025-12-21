@@ -1,0 +1,69 @@
+paths:
+  /api/auth/check-id:
+    get:
+      summary: '아이디 중복 확인'
+      parameters:
+        - in: query
+          name: loginId
+          required: true
+          schema:
+            type: string
+          example: workus_admin
+      responses:
+        '200':
+          description: '가입가능'
+          content:
+            application/json:
+              schema:
+                $ref: './auth-schemas.yaml#/components/schemas/Response'
+              examples:
+                available:
+                  value:
+                    code: 0
+                    message: ""
+                    data: null
+                unavailable:
+                  value:
+                    code: -1
+                    message: ""
+                    data: null
+  /api/auth/signup:
+    post:
+      summary: '회원가입'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './auth-schemas.yaml#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: '가입완료'
+          content:
+            application/json:
+              schema:
+                $ref: './auth-schemas.yaml#/components/schemas/Response'
+              examples:
+                success:
+                  value:
+                    code: 0
+                    message: 성공
+                    data: null
+                duplicateLoginId:
+                  value:
+                    code: -2
+                    message: '아이디가 이미 사용 중입니다.'
+                    data: null
+        '400':
+          description: '파라미터 오류'
+          content:
+            application/json:
+              schema:
+                $ref: './auth-schemas.yaml#/components/schemas/Response'
+              examples:
+                validationError:
+                  value:
+                    code: -1
+                    message: 요청값 오류
+                    data:
+                      loginId: 'must not be blank'

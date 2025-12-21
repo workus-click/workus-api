@@ -1,0 +1,56 @@
+components:
+  schemas:
+    SignupRequest:
+      type: object
+      required:
+        - name
+        - loginId
+        - password
+        - phone
+        - emailId
+        - emailDomain
+        - agreeTerms
+        - agreePrivacy
+      properties:
+        name:
+          type: string
+          example: 워커스
+        loginId:
+          type: string
+          example: workus
+        password:
+          type: string
+          example: p@ssW0rd
+        phone:
+          type: string
+          example: 01012345678
+        emailId:
+          type: string
+          example: admin
+        emailDomain:
+          type: string
+          example: workus.com
+        agreeTerms:
+          type: boolean
+          example: true
+        agreePrivacy:
+          type: boolean
+          example: true
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
+        data:
+          nullable: true
+    ResponseVoid:
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - type: object
+          properties:
+            data:
+              nullable: true
+              example: null
