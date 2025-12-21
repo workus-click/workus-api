@@ -4,19 +4,12 @@ import com.github.f4b6a3.tsid.TsidFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ActiveProfiles;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {IdGenerator.class, TsidFactory.class})
 @Slf4j
 class IdGeneratorTest {
-    @Autowired
-    private TsidFactory factory;
-
     @Test
     @DisplayName("Long 타입 ID가 단조 증가하는지 테스트")
     void testLongIdMonotonicIncreasing() {

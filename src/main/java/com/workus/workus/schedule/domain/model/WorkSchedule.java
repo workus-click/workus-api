@@ -1,8 +1,10 @@
 package com.workus.workus.schedule.domain.model;
 
 
-import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.common.entity.BaseEntity;
+import com.workus.workus.schedule.domain.exception.AutoSourceRequiresWorkTimeIdException;
+import com.workus.workus.schedule.domain.exception.BreakTimeOutOfWorkTimeRangeException;
+import com.workus.workus.schedule.domain.exception.ManualSourceMustNotHaveWorkTimeIdException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -40,6 +42,7 @@ public class WorkSchedule extends BaseEntity {
     private Long workTimeId;          // nullable
 
     public WorkSchedule(
+            Long workScheduleId,
             Long storeUserId,
             LocalDate scheduleDate,
             TimeRange workTime,
@@ -47,7 +50,7 @@ public class WorkSchedule extends BaseEntity {
             WorkScheduleSource source,
             Long workTimeId
     ) {
-        this.workScheduleId = IdGenerator.nextId();
+        this.workScheduleId = Objects.requireNonNull(workScheduleId);
         this.storeUserId = Objects.requireNonNull(storeUserId);
         this.scheduleDate = Objects.requireNonNull(scheduleDate);
         this.source = Objects.requireNonNull(source);
@@ -56,20 +59,43 @@ public class WorkSchedule extends BaseEntity {
         this.workTimeId = workTimeId;
 
         validateBreakWithinWork();
+        validateWorkTimeSourcePolicy();
     }
 
     public Long getId(){
         return workScheduleId;
     }
 
-    public void changeWorkTime(TimeRange newWorkTime) {
-        if(!hasBreakTime() || getBreakDateTime().isWithinRange(getDateTime(newWorkTime))){
-            setWorkTime(newWorkTime);
+    public boolean canChangeWorkTime(TimeRange newWorkTime) {
+        Objects.requireNonNull(newWorkTime);
+        if(!hasBreakTime()) {
+            return true;
         }
+        return getBreakDateTime().isWithinRange(getDateTime(newWorkTime));
     }
+    public void changeWorkTime(TimeRange newWorkTime) {
+        if(!canChangeWorkTime(newWorkTime)){
+            throw new BreakTimeOutOfWorkTimeRangeException();
+        }
+        this.workTime = newWorkTime;
+    }
+
+    public boolean canChangeBreakTime(TimeRange newBreakTime) {
+        if(newBreakTime == null){
+            return true;
+        }
+        return getDateTime(newBreakTime).isWithinRange(getWorkDateTime());
+    }
+    public void changeBreakTime(TimeRange newBreakTime) {
+        if(!canChangeBreakTime(newBreakTime)){
+            throw new BreakTimeOutOfWorkTimeRangeException();
+        }
+        this.breakTime = newBreakTime;
+    }
+
     public boolean workTimeOverlaps(WorkSchedule otherSchedule) {
         // [start, end) 기준 겹침 검사
-        return !this.getWorkDateTime().overlaps(otherSchedule.getWorkDateTime());
+        return this.getWorkDateTime().overlaps(otherSchedule.getWorkDateTime());
     }
     public boolean isOvernightWork() {;
         return workTime.spansNextDay();
@@ -102,11 +128,17 @@ public class WorkSchedule extends BaseEntity {
         DateTimeRange breakInterval = getBreakDateTime();
 
         if(!breakInterval.isWithinRange(workDateTime)){
-            throw new IllegalStateException("휴게시간은 근무시간 범위 안에 있어야 합니다.");
+            throw new BreakTimeOutOfWorkTimeRangeException();
         }
     }
-    private void setWorkTime(TimeRange newWorkTime){
-        Objects.requireNonNull(newWorkTime);
-        this.workTime = newWorkTime;
+    private void validateWorkTimeSourcePolicy() {
+        if (source == WorkScheduleSource.AUTO && workTimeId == null) {
+            throw new AutoSourceRequiresWorkTimeIdException();
+        }
+
+        if (source == WorkScheduleSource.MANUAL && workTimeId != null) {
+            throw new ManualSourceMustNotHaveWorkTimeIdException();
+        }
     }
+
 }

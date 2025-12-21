@@ -22,7 +22,7 @@ public record PlanCreationParam(
                 scheduleDate,
                 workTime,
                 breakTime,
-                WorkScheduleSource.USER,
+                WorkScheduleSource.MANUAL,
                 null
         );
     }
