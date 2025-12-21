@@ -36,6 +36,18 @@ components:
         agreePrivacy:
           type: boolean
           example: true
+    LoginRequest:
+      type: object
+      required:
+        - loginId
+        - password
+      properties:
+        loginId:
+          type: string
+          example: workus
+        password:
+          type: string
+          example: p@ssW0rd
     Response:
       type: object
       properties:

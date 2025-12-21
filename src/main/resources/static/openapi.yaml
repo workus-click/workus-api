@@ -9,3 +9,5 @@ paths:
     $ref: './openapi/auth.yaml#/paths/~1api~1auth~1check-id'
   /api/auth/signup:
     $ref: './openapi/auth.yaml#/paths/~1api~1auth~1signup'
+  /api/auth/login:
+    $ref: './openapi/auth.yaml#/paths/~1api~1auth~1login'
