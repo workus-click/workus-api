@@ -25,16 +25,20 @@ ext {
 dependencies {
 	//web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	// datasource
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	testImplementation 'com.h2database:h2'
 	 implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	// implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.session:spring-session-data-redis'
 	implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
 	// validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// openapi
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 	// scheduler
 	implementation 'org.springframework.boot:spring-boot-starter-quartz'
 

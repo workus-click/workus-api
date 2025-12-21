@@ -18,8 +18,9 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 16379
+      host: ${REDIS_URL}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
 
   jpa:
     properties:
@@ -40,6 +41,14 @@ spring:
 
 server:
   port: 8080
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    url: /openapi.yaml
+    disable-swagger-default-url: true
 
 logging:
   level:

@@ -19,6 +19,11 @@ spring:
     locations:
       - classpath:db/migration
 
+  session:
+    timeout: 30m
+    redis:
+      namespace: session
+
   quartz:
     job-store-type: jdbc               # JDBC JobStore (DB 영속화)
     jdbc:
@@ -56,6 +61,12 @@ server:
   shutdown: graceful
   port: 8080
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 management:
   endpoints:
     web:
@@ -78,4 +89,3 @@ id:
     tsid:
       epoch: 2025-01-01T00:00:00Z
       node-bits: 8
-
