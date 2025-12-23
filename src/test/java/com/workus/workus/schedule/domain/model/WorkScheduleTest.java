@@ -1,5 +1,8 @@
 package com.workus.workus.schedule.domain.model;
 
+import com.workus.workus.schedule.domain.core.TimeRange;
+import com.workus.workus.schedule.domain.core.WorkSchedule;
+import com.workus.workus.schedule.domain.core.WorkScheduleSource;
 import com.workus.workus.schedule.domain.exception.AutoSourceRequiresWorkTimeIdException;
 import com.workus.workus.schedule.domain.exception.BreakTimeOutOfWorkTimeRangeException;
 import com.workus.workus.schedule.domain.exception.ManualSourceMustNotHaveWorkTimeIdException;

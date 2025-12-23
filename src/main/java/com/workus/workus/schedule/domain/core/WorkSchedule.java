@@ -1,4 +1,4 @@
-package com.workus.workus.schedule.domain.model;
+package com.workus.workus.schedule.domain.core;
 
 
 import com.workus.workus.common.entity.BaseEntity;

@@ -1,7 +1,4 @@
-package com.workus.workus.schedule.domain.service;
-
-import com.workus.workus.schedule.domain.model.TimeRange;
-import com.workus.workus.schedule.domain.model.WorkScheduleSource;
+package com.workus.workus.schedule.domain.core;
 
 import java.time.LocalDate;
 

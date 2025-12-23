@@ -1,4 +1,4 @@
-package com.workus.workus.schedule.domain.model;
+package com.workus.workus.schedule.domain.core;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;

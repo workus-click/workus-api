@@ -1,9 +1,9 @@
 package com.workus.workus.schedule.domain.repository;
 
 import com.workus.workus.common.component.IdGenerator;
-import com.workus.workus.schedule.domain.model.TimeRange;
-import com.workus.workus.schedule.domain.model.WorkSchedule;
-import com.workus.workus.schedule.domain.model.WorkScheduleSource;
+import com.workus.workus.schedule.domain.core.TimeRange;
+import com.workus.workus.schedule.domain.core.WorkSchedule;
+import com.workus.workus.schedule.domain.core.WorkScheduleSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

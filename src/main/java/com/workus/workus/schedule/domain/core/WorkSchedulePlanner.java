@@ -1,8 +1,7 @@
-package com.workus.workus.schedule.domain.service;
+package com.workus.workus.schedule.domain.core;
 
 import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.schedule.domain.exception.ScheduleConflictException;
-import com.workus.workus.schedule.domain.model.WorkSchedule;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;

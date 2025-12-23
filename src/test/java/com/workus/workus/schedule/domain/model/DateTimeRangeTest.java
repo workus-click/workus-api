@@ -1,5 +1,6 @@
 package com.workus.workus.schedule.domain.model;
 
+import com.workus.workus.schedule.domain.core.DateTimeRange;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

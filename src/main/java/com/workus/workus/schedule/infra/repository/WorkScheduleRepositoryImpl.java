@@ -1,7 +1,7 @@
 package com.workus.workus.schedule.infra.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.workus.workus.schedule.domain.model.WorkSchedule;
+import com.workus.workus.schedule.domain.core.WorkSchedule;
 import com.workus.workus.schedule.domain.repository.WorkScheduleRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

@@ -1,6 +1,6 @@
 package com.workus.workus.schedule.domain.repository;
 
-import com.workus.workus.schedule.domain.model.WorkSchedule;
+import com.workus.workus.schedule.domain.core.WorkSchedule;
 
 import java.time.LocalDate;
 import java.util.List;

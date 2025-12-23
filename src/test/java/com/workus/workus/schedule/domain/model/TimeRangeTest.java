@@ -2,6 +2,7 @@ package com.workus.workus.schedule.domain.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.workus.workus.schedule.domain.core.TimeRange;
 import org.junit.jupiter.api.Test;
 import java.time.LocalTime;
 
