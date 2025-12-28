@@ -1,11 +1,6 @@
-package com.workus.workus.schedule.domain.model;
+package com.workus.workus.schedule.domain.core;
 
-import com.workus.workus.schedule.domain.core.TimeRange;
-import com.workus.workus.schedule.domain.core.WorkSchedule;
-import com.workus.workus.schedule.domain.core.WorkScheduleSource;
-import com.workus.workus.schedule.domain.exception.AutoSourceRequiresWorkTimeIdException;
 import com.workus.workus.schedule.domain.exception.BreakTimeOutOfWorkTimeRangeException;
-import com.workus.workus.schedule.domain.exception.ManualSourceMustNotHaveWorkTimeIdException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,66 +19,18 @@ class WorkScheduleTest {
                 LocalDate.of(2025,1,1),
                 workTime,
                 breakTime,
-                WorkScheduleSource.MANUAL,
-                null
+                WorkScheduleSource.ofManual()
         );
     }
     @Nested
     @DisplayName("스케줄생성")
     class WorkScheduleCreation {
         @Nested
-        @DisplayName("근무스케줄 출처 도메인 정책")
-        class WorkScheduleSourcePolicy {
-            final Long workScheduleId = 1L;
-            final Long storeUserId = 1L;
-            final LocalDate scheduleDate = LocalDate.of(2025, 1, 1);
-            final TimeRange workTime = new TimeRange(LocalTime.of(9, 0), LocalTime.of(17, 0));
-            final TimeRange breakTime = null;
-
-            @Test
-            @DisplayName("자동 스케줄은 연결 근무시간설정 없이 생성될 수 없다")
-            void shouldRejectCreation_whenAutoSourceWithoutWorkTimeId() {
-                assertThatThrownBy(() ->  new WorkSchedule(workScheduleId, storeUserId, scheduleDate, workTime, breakTime
-                        , WorkScheduleSource.AUTO
-                        , null))
-                        .isInstanceOf(AutoSourceRequiresWorkTimeIdException.class);
-            }
-            @Test
-            @DisplayName("자동 스케줄은 연결 근무시간설정이 있으면 생성된다")
-            void shouldAllowCreation_whenAutoSourceWithWorkTimeId() {
-                assertThatCode(() -> new WorkSchedule(workScheduleId, storeUserId, scheduleDate, workTime, breakTime
-                        , WorkScheduleSource.AUTO
-                        , 1L))
-                        .doesNotThrowAnyException();
-            }
-
-
-            @Test
-            @DisplayName("수동 스케줄은 연결 근무시간설정을 가질 수 없다")
-            void shouldRejectCreation_whenManualSourceWithWorkTimeId() {
-                assertThatThrownBy(() -> new WorkSchedule(workScheduleId, storeUserId, scheduleDate, workTime, breakTime
-                        , WorkScheduleSource.MANUAL
-                        , 1L))
-                        .isInstanceOf(ManualSourceMustNotHaveWorkTimeIdException.class);
-            }
-
-            @Test
-            @DisplayName("수동 스케줄은 연결 근무시간설정 없이 생성된다")
-            void shouldAllowCreation_whenManualSourceWithoutWorkTimeId() {
-                assertThatCode(() -> new WorkSchedule(workScheduleId, storeUserId, scheduleDate, workTime, breakTime
-                        , WorkScheduleSource.MANUAL
-                        , null))
-                        .doesNotThrowAnyException();
-            }
-        }
-
-        @Nested
         @DisplayName("휴게시간과 근무시간의 도메인 정책")
         class BreakTimeWithinWorkTimePolicy {
             final Long workScheduleId = 1L;
             final Long storeUserId = 1L;
             final LocalDate scheduleDate = LocalDate.of(2025, 1, 1);
-            final WorkScheduleSource source = WorkScheduleSource.MANUAL;
 
             @Test
             @DisplayName("휴게시간이 근무시간 범위를 벗어난 경우 스케줄을 생성할 수 없다")
@@ -97,18 +44,14 @@ class WorkScheduleTest {
                         new TimeRange(LocalTime.of(16, 0), LocalTime.of(19, 30)),
                         new TimeRange(LocalTime.of(18, 0), LocalTime.of(19, 30))
                 );
+
                 breakTimesOutsideWork.forEach(breakTime ->
-                        assertThatThrownBy(() ->
-                                new WorkSchedule(
-                                        workScheduleId,
-                                        storeUserId,
-                                        scheduleDate,
-                                        workTime,
-                                        breakTime,
-                                        source,
-                                        null
-                                )
-                        ).isInstanceOf(BreakTimeOutOfWorkTimeRangeException.class)
+                        assertThatCode(() -> new WorkSchedule(
+                                workScheduleId,storeUserId,scheduleDate,
+                                workTime,
+                                breakTime,
+                                WorkScheduleSource.ofManual())
+                        ).doesNotThrowAnyException()
                 );
             }
 
@@ -123,16 +66,10 @@ class WorkScheduleTest {
                         new TimeRange(LocalTime.of(16, 30), LocalTime.of(17, 0))
                 );
                 breakTimesWithinWork.forEach(breakTime ->
-                        assertThatCode(() ->
-                                new WorkSchedule(
-                                        workScheduleId,
-                                        storeUserId,
-                                        scheduleDate,
-                                        workTime,
-                                        breakTime,
-                                        source,
-                                        null
-                                )
+                        assertThatCode(() -> new WorkSchedule(
+                                workScheduleId,storeUserId,scheduleDate
+                                ,workTime,breakTime
+                                ,WorkScheduleSource.ofManual())
                         ).doesNotThrowAnyException()
                 );
             }
@@ -149,13 +86,9 @@ class WorkScheduleTest {
                 );
                 workTimes.forEach(workTime -> assertThatCode(() ->
                         new WorkSchedule(
-                                workScheduleId,
-                                storeUserId,
-                                scheduleDate,
-                                workTime,
-                                null,
-                                source,
-                                null
+                                workScheduleId,storeUserId,scheduleDate,
+                                workTime,null,
+                                WorkScheduleSource.ofManual()
                         )).doesNotThrowAnyException()
                 );
             }
@@ -436,8 +369,7 @@ class WorkScheduleTest {
                     scheduleDate,
                     workTime,
                     null,
-                    WorkScheduleSource.MANUAL,
-                    null
+                    WorkScheduleSource.ofManual()
             );
         }
         @Test

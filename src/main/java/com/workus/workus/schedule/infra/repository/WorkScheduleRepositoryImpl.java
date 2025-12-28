@@ -13,9 +13,5 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WorkScheduleRepositoryImpl implements WorkScheduleRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
-    @Override
-    public List<WorkSchedule> findRangeForUpdate(Long storeUserId, LocalDate from, LocalDate to) {
-        return List.of();
-    }
 
 }

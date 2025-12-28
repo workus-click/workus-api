@@ -1,6 +1,7 @@
 package com.workus.workus.schedule.domain.core;
 
 
+import com.workus.workus.common.result.Result;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -60,4 +61,3 @@ public final class TimeRange {
     }
 
 }
-
