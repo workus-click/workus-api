@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.DayOfWeek;
 import java.util.Objects;
 
 @Entity
@@ -32,8 +33,9 @@ public class EmployeeAttendInfo extends BaseEntity {
     private Long storeUserId;
 
     // 요일제에서 일자 단위로 근무스케줄 편성 예정이 없으므로 workdays -> day_of_week으로 변경
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 3, updatable = false)
-    private String dayOfWeek;
+    private DayOfWeek dayOfWeek;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "work_time_id", nullable = false)
@@ -44,7 +46,7 @@ public class EmployeeAttendInfo extends BaseEntity {
 
     public static EmployeeAttendInfo of(
             Long storeUserId,
-            String dayOfWeek,
+            DayOfWeek dayOfWeek,
             WorkTimeConfig workTimeConfig) {
         return EmployeeAttendInfo.builder()
                 .id(IdGenerator.nextId())

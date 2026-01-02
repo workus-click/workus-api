@@ -36,7 +36,7 @@ public class EmployeePayInfo extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "pay_type", nullable = false, length = 20)
-    private PayTypeCode payType;
+    private PayType payType;
 
     @Column(name = "salary", precision = 12, scale = 2)
     private BigDecimal salary;

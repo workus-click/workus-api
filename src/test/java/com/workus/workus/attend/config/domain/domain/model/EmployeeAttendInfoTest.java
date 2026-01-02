@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.*;
@@ -32,7 +33,7 @@ class EmployeeAttendInfoTest {
         @DisplayName("정상적인 파라미터로 생성할 수 있다")
         void shouldCreate_whenValidParameters() {
             Long storeUserId = 1L;
-            String dayOfWeek = "001";
+            DayOfWeek dayOfWeek = DayOfWeek.FRIDAY;
             WorkTimeConfig workTimeConfig = createWorkTimeConfig();
 
             assertThatCode(() ->
@@ -49,7 +50,7 @@ class EmployeeAttendInfoTest {
         void shouldSetIsDeletedToTrue_whenDelete() {
             EmployeeAttendInfo info = EmployeeAttendInfo.of(
                     1L,
-                    "001",
+                    DayOfWeek.FRIDAY,
                     createWorkTimeConfig()
             );
 
@@ -67,7 +68,7 @@ class EmployeeAttendInfoTest {
         void shouldSetIsDeletedToFalse_whenRestore() {
             EmployeeAttendInfo info = EmployeeAttendInfo.of(
                     1L,
-                    "001",
+                    DayOfWeek.FRIDAY,
                     createWorkTimeConfig()
             );
             info.delete();
@@ -86,7 +87,7 @@ class EmployeeAttendInfoTest {
         void shouldChangeWorkTimeConfig() {
             EmployeeAttendInfo info = EmployeeAttendInfo.of(
                     1L,
-                    "001",
+                    DayOfWeek.FRIDAY,
                     createWorkTimeConfig()
             );
             WorkTimeConfig newWorkTimeConfig = WorkTimeConfig.of(
