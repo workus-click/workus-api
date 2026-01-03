@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.time.LocalTime;
 
@@ -17,9 +18,7 @@ public final class TimeRange {
     private LocalTime start;
     private LocalTime end;
 
-    public TimeRange(LocalTime start, LocalTime end) {
-        Objects.requireNonNull(start, "start must not be null");
-        Objects.requireNonNull(end, "end must not be null");
+    public TimeRange(@NonNull LocalTime start, @NonNull LocalTime end) {
         this.start = start;
         this.end = end;
     }

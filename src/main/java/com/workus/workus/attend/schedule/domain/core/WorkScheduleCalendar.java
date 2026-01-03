@@ -25,8 +25,8 @@ public final class WorkScheduleCalendar {
         Set<LocalDate> loadedDates = new HashSet<>();
 
         for (DateRange requestedRange : requestedRanges) {
-            LocalDate localDate = requestedRange.from();
-            while (!localDate.isAfter(requestedRange.to())) {
+            LocalDate localDate = requestedRange.start();
+            while (!localDate.isAfter(requestedRange.end())) {
                 loadedDates.add(localDate);
                 localDate = localDate.plusDays(1);
             }

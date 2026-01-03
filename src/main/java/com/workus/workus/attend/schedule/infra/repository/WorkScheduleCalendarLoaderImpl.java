@@ -28,8 +28,8 @@ public class WorkScheduleCalendarLoaderImpl implements WorkScheduleCalendarLoade
         for (DateRange range : loadRanges) {
             scheduleDateBetween.or(
                 workSchedule.scheduleDate.between(
-                    range.from(),
-                    range.to()
+                    range.start(),
+                    range.end()
                 )
             );
         }

@@ -1,14 +1,14 @@
 package com.workus.workus.attend.common.vo;
+import lombok.NonNull;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
 // [start, end)
-public record DateTimeRange(LocalDateTime start, LocalDateTime end) {
-    public DateTimeRange(LocalDateTime start, LocalDateTime end) {
-        this.start = Objects.requireNonNull(start);
-        this.end = Objects.requireNonNull(end);
+public record DateTimeRange(@NonNull LocalDateTime start, @NonNull LocalDateTime end) {
+    public DateTimeRange {
         if (!end.isAfter(start)) {
             throw new IllegalArgumentException("end는 start보다 이후여야 합니다.");
         }

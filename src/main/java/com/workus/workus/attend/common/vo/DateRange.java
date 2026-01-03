@@ -1,11 +1,12 @@
 package com.workus.workus.attend.common.vo;
 
+import lombok.NonNull;
+
 import java.time.LocalDate;
 
-// [from, to]
-public record DateRange(LocalDate from, LocalDate to) {
+// [start, end)
+public record DateRange(@NonNull LocalDate start, @NonNull LocalDate end) {
     public DateRange {
-        if (from == null || to == null) throw new IllegalArgumentException();
-        if (to.isBefore(from)) throw new IllegalArgumentException();
+        if (!end.isAfter(start)) throw new IllegalArgumentException("end는 start보다 이후여야 합니다.");
     }
 }
