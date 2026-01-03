@@ -4,7 +4,7 @@ import com.workus.workus.attend.config.domain.model.EmployeeType;
 import com.workus.workus.attend.config.domain.model.WorkTimeConfig;
 import com.workus.workus.attend.config.domain.repository.WorkTimeConfigRepository;
 import com.workus.workus.attend.config.repository.JpaWorkTimeConfigRepository;
-import com.workus.workus.schedule.domain.model.TimeRange;
+import com.workus.workus.attend.common.vo.TimeRange;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
