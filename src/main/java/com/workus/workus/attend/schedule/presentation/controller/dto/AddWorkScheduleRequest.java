@@ -1,8 +1,10 @@
 package com.workus.workus.attend.schedule.presentation.controller.dto;
 
 
+import com.workus.workus.attend.schedule.presentation.controller.validation.ValidationRules;
 import com.workus.workus.common.presentation.validation.IsoDate;
 import com.workus.workus.common.presentation.validation.IsoTime;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -23,4 +25,8 @@ public record AddWorkScheduleRequest(
     @IsoTime
     String breakTimeEnd
 ) {
+    @AssertTrue(message = "{schedule.breakTime.providedAllOrNone}")
+    public boolean isValidBreakTime() {
+        return ValidationRules.allOrNone(breakTimeStart, breakTimeEnd);
+    }
 }

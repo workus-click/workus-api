@@ -10,7 +10,6 @@ import com.workus.workus.attend.schedule.domain.core.WorkScheduleSource;
 import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation;
 import com.workus.workus.attend.schedule.presentation.controller.dto.AddWorkScheduleRequest;
 import com.workus.workus.attend.schedule.presentation.controller.dto.BatchAddWorkScheduleRequest;
-import com.workus.workus.common.presentation.dto.Response;
 import com.workus.workus.common.result.Result;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.workus.workus.attend.schedule.domain.core.CreationType.AUTO;
 
 
 @RestController
@@ -34,10 +32,6 @@ public class WorkScheduleController {
 
     @PostMapping
     public ResponseEntity<String> addWorkSchedule(@RequestBody @Valid AddWorkScheduleRequest request) {
-        if(request.breakTimeStart() == null && request.breakTimeEnd() != null
-        || request.breakTimeStart() != null && request.breakTimeEnd() == null) {
-            return ResponseEntity.badRequest().body("Both breakTimeStart and breakTimeEnd should be provided together or not at all.");
-        }
         TimeRange workTimeRange = new TimeRange(LocalTime.parse(request.workTimeStart()), LocalTime.parse(request.workTimeEnd()));
         TimeRange breakTimeRange = request.breakTimeStart() == null ? null
                 : new TimeRange(LocalTime.parse(request.breakTimeStart()), LocalTime.parse(request.breakTimeEnd()));
@@ -63,7 +57,6 @@ public class WorkScheduleController {
 
     @PostMapping("/batch")
     public ResponseEntity<String> addWorkSchedules(@RequestBody @Valid BatchAddWorkScheduleRequest request) {
-        CreationType creationType = CreationType.valueOf(request.creationType());
         Set<ScheduleItem> scheduleItems = request.schedules().stream().map(item -> new ScheduleItem(
                 LocalDate.parse(item.scheduleDate()),
                 new TimeRange(LocalTime.parse(item.workTimeStart()), LocalTime.parse(item.workTimeEnd())),
@@ -73,9 +66,13 @@ public class WorkScheduleController {
 
         BatchAddWorkSchedulesCommand batchAddWorkSchedulesCommand = new BatchAddWorkSchedulesCommand(
                 request.storeUserId(),
-                creationType == AUTO ? WorkScheduleSource.ofAuto(request.workTimeId()) : WorkScheduleSource.ofManual(),
+                WorkScheduleSource.create(
+                        CreationType.valueOf(request.creationType())
+                        , request.workTimeId()
+                ).getOrThrow(),
                 scheduleItems
         );
+
         List<Result<Long, AddWorkScheduleService.FailedAddWorkSchedule>> results = addWorkScheduleService.addWorkSchedules(batchAddWorkSchedulesCommand);
 
         return ResponseEntity.ok(results.toString());
