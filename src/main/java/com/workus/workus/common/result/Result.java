@@ -1,5 +1,7 @@
 package com.workus.workus.common.result;
 
+import lombok.ToString;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -12,6 +14,7 @@ import java.util.function.Function;
  * @param <T> 성공일 때 담기는 값의 타입
  * @param <E> 실패일 때 담기는 오류의 타입
  */
+@ToString
 public final class Result<T, E> {
     private final T value;
     private final E error;

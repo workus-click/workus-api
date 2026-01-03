@@ -24,7 +24,7 @@ public final class WorkScheduleSource {
         this.workTimeId = workTimeId;
     }
 
-    public static WorkScheduleSource ofAuto(Long workTimeId) {
+    public static WorkScheduleSource ofAuto(@NonNull Long workTimeId) {
         return new WorkScheduleSource(CreationType.AUTO, workTimeId);
     }
     public static WorkScheduleSource ofManual() {
