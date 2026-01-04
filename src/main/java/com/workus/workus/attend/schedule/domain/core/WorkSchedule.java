@@ -3,10 +3,12 @@ package com.workus.workus.attend.schedule.domain.core;
 
 import com.workus.workus.attend.common.vo.DateTimeRange;
 import com.workus.workus.attend.common.vo.TimeRange;
+import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation;
 import com.workus.workus.common.entity.BaseEntity;
 import com.workus.workus.attend.schedule.domain.exception.BreakTimeOutOfWorkTimeRangeException;
 import com.workus.workus.attend.schedule.domain.exception.WorkScheduleException;
 import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation.BreakTimeOutOfWorkTimeRange;
+import com.workus.workus.common.result.Result;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,21 +23,12 @@ import java.util.Objects;
 public class WorkSchedule extends BaseEntity {
     @Id @EqualsAndHashCode.Include
     private Long workScheduleId;
+    @Getter
     private Long storeUserId;
     @Getter
     private LocalDate scheduleDate;// 근무 시작 날짜 기준
     @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "start", column = @Column(name = "work_start")),
-        @AttributeOverride(name = "end", column = @Column(name = "work_end"))
-    })
-    private TimeRange workTime;
-    @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "start", column = @Column(name = "break_start")),
-        @AttributeOverride(name = "end", column = @Column(name = "break_end"))
-    })
-    private TimeRange breakTime;       // 휴게 시간 (선택)
+    private WorkAndBreakTime workAndBreakTime;
     @Embedded
     private WorkScheduleSource source;
 
@@ -43,49 +36,44 @@ public class WorkSchedule extends BaseEntity {
             @NonNull Long workScheduleId,
             @NonNull Long storeUserId,
             @NonNull LocalDate scheduleDate,
-            @NonNull TimeRange workTime,
-            TimeRange breakTime,
+            @NonNull WorkAndBreakTime workAndBreakTime,
             @NonNull WorkScheduleSource source
     ) {
-        if(!isBreakWithinWork(scheduleDate, workTime, breakTime)) {
-            throw new WorkScheduleException(new BreakTimeOutOfWorkTimeRange(workTime, breakTime));
-        }
         this.workScheduleId = workScheduleId;
         this.storeUserId = storeUserId;
         this.scheduleDate = scheduleDate;
         this.source = source;
-        this.workTime = workTime;
-        this.breakTime = breakTime;
+        this.workAndBreakTime = workAndBreakTime;
     }
     public Long getId(){
         return workScheduleId;
     }
 
-    public boolean canChangeWorkTime(TimeRange newWorkTime) {
-        Objects.requireNonNull(newWorkTime);
-        if(!hasBreakTime()) {
-            return true;
-        }
-        return getBreakDateTime().isWithinRange(DateTimeRange.of(scheduleDate, newWorkTime));
+    public boolean canChangeWorkTime(@NonNull TimeRange newWorkTime) {
+        return WorkAndBreakTime.create(newWorkTime, workAndBreakTime.breakTime().orElse(null)).isSuccess();
     }
     public void changeWorkTime(TimeRange newWorkTime) {
         if(!canChangeWorkTime(newWorkTime)){
-            throw new BreakTimeOutOfWorkTimeRangeException();
+            throw new WorkScheduleException(new BreakTimeOutOfWorkTimeRange(newWorkTime, workAndBreakTime.breakTime().get()));
         }
-        this.workTime = newWorkTime;
+
+        this.workAndBreakTime = WorkAndBreakTime.create(
+                newWorkTime,
+                workAndBreakTime.breakTime().orElse(null)
+        ).getOrThrow();
     }
 
     public boolean canChangeBreakTime(TimeRange newBreakTime) {
-        if(newBreakTime == null){
-            return true;
-        }
-        return DateTimeRange.of(scheduleDate, newBreakTime).isWithinRange(getWorkDateTime());
+        return WorkAndBreakTime.create(workAndBreakTime.workTime(), newBreakTime).isSuccess();
     }
     public void changeBreakTime(TimeRange newBreakTime) {
         if(!canChangeBreakTime(newBreakTime)){
-            throw new BreakTimeOutOfWorkTimeRangeException();
+            throw new WorkScheduleException(new BreakTimeOutOfWorkTimeRange(workAndBreakTime.workTime(), newBreakTime));
         }
-        this.breakTime = newBreakTime;
+        this.workAndBreakTime = WorkAndBreakTime.create(
+                workAndBreakTime.workTime(),
+                newBreakTime
+        ).getOrThrow();
     }
 
     public boolean workTimeOverlaps(WorkSchedule otherSchedule) {
@@ -93,29 +81,13 @@ public class WorkSchedule extends BaseEntity {
         return this.getWorkDateTime().overlaps(otherSchedule.getWorkDateTime());
     }
     public boolean isOvernightWork() {
-        return workTime.spansNextDay();
+        return workAndBreakTime.workTime().spansNextDay();
     }
     public boolean hasBreakTime() {
-        return breakTime != null;
+        return workAndBreakTime.breakTime().isPresent();
     }
 
     DateTimeRange getWorkDateTime(){
-        return DateTimeRange.of(scheduleDate, workTime);
-    }
-    DateTimeRange getBreakDateTime(){
-        if (breakTime == null) {
-            return null;
-        }
-        return DateTimeRange.of(scheduleDate, breakTime);
-    }
-
-    static boolean isBreakWithinWork(LocalDate scheduleDate, TimeRange workTime, TimeRange breakTime) {
-        if (breakTime == null) {
-            return true;
-        }
-        DateTimeRange workDateTime = DateTimeRange.of(scheduleDate, workTime);
-        DateTimeRange breakInterval = DateTimeRange.of(scheduleDate, breakTime);
-
-        return breakInterval.isWithinRange(workDateTime);
+        return DateTimeRange.of(scheduleDate, workAndBreakTime.workTime());
     }
 }

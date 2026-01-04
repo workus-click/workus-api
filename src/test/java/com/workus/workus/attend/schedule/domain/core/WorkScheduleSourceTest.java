@@ -19,7 +19,7 @@ class WorkScheduleSourceTest {
     @Test
     @DisplayName("자동 스케줄은 연결 근무시간설정 없이 생성될 수 없다")
     void ofAuto_shouldRejectCreation_whenWorkTimeIdIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> WorkScheduleSource.ofAuto(null));
+        assertThrows(NullPointerException.class, () -> WorkScheduleSource.ofAuto(null));
     }
 
     @Test

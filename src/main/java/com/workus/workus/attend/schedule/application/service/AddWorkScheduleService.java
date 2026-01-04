@@ -47,8 +47,7 @@ public class AddWorkScheduleService {
                 .map(scheduleItem -> new AddWorkScheduleCommand(
                         command.storeUserId(),
                         scheduleItem.scheduleDate(),
-                        scheduleItem.workTime(),
-                        scheduleItem.breakTime(),
+                        scheduleItem.workAndBreakTime(),
                         command.source()
                 ))
                 .map(addCommand -> calendar.addSchedule(IdGenerator.nextId(), addCommand)
