@@ -26,7 +26,7 @@ public final class TimeRange {
     }
 
     public boolean spansNextDay() {
-        return end.isBefore(start);
+        return !end.isAfter(start);
     }
     boolean isFullDay() {
         return start.equals(end);
