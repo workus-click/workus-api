@@ -12,20 +12,26 @@ import java.util.*;
 public final class WorkScheduleCalendar {
     private final long storeUserId;
     private final Set<LocalDate> loadedDates;
-    private final List<WorkSchedule> schedules;
+    private final Set<WorkSchedule> schedules;
 
-    private WorkScheduleCalendar(long storeUserId, Set<LocalDate> loadedDates, List<WorkSchedule> loadedSchedules) {
+    private WorkScheduleCalendar(long storeUserId, Set<LocalDate> loadedDates, Collection<WorkSchedule> loadedSchedules) {
+        if(loadedSchedules.stream()
+                .map(WorkSchedule::getStoreUserId)
+                .anyMatch(userId -> !userId.equals(storeUserId))){
+            throw new IllegalArgumentException("storeUserId가 다른 스케줄이 포함되어있습니다.");
+        }
+
         this.storeUserId = storeUserId;
         this.loadedDates = loadedDates;
-        this.schedules = new ArrayList<>(loadedSchedules);
+        this.schedules = new HashSet<>(loadedSchedules);
     }
 
-    public static WorkScheduleCalendar of(long storeUserId, List<DateRange> requestedRanges, List<WorkSchedule> loadedSchedules) {
+    public static WorkScheduleCalendar of(long storeUserId, Collection<DateRange> requestedRanges, Collection<WorkSchedule> loadedSchedules) {
         Set<LocalDate> loadedDates = new HashSet<>();
 
         for (DateRange requestedRange : requestedRanges) {
             LocalDate localDate = requestedRange.start();
-            while (!localDate.isAfter(requestedRange.end())) {
+            while (localDate.isBefore(requestedRange.end())) {
                 loadedDates.add(localDate);
                 localDate = localDate.plusDays(1);
             }
@@ -34,8 +40,8 @@ public final class WorkScheduleCalendar {
         return new WorkScheduleCalendar(storeUserId, loadedDates, loadedSchedules);
     }
 
-    public Result<WorkSchedule, WorkScheduleRuleViolation.Create> addSchedule(@NonNull Long workScheduleId, AddWorkScheduleCommand command) {
-        if (command.storeUserId() != this.storeUserId) {
+    public Result<WorkSchedule, WorkScheduleRuleViolation.CreateAndChange> addSchedule(@NonNull Long workScheduleId, AddWorkScheduleCommand command) {
+        if (!command.storeUserId().equals(this.storeUserId)) {
             throw new IllegalArgumentException("storeUserId mismatch");
         }
         if (!loadedDates.contains(command.scheduleDate())) {
@@ -50,7 +56,7 @@ public final class WorkScheduleCalendar {
                 command.source()
         );
 
-        Result<Void, WorkSchedule> validateConflict = validateConflictSchedule(schedule);
+        Result<Void, WorkSchedule> validateConflict = validateNoConflict(workScheduleId, schedule.getScheduleDate(), schedule.getWorkAndBreakTime());
         if (validateConflict.isFailure()) {
             WorkSchedule overlapped = validateConflict.getErrorOrThrow();
             return Result.failure(new WorkScheduleRuleViolation.ScheduleConflict(overlapped.getId()));
@@ -60,11 +66,26 @@ public final class WorkScheduleCalendar {
         return Result.success(schedule);
     }
 
-    private Result<Void, WorkSchedule> validateConflictSchedule(WorkSchedule candidate) {
+    public Result<Void, WorkScheduleRuleViolation.CreateAndChange> changeSchedule(WorkSchedule workSchedule, LocalDate newDate, WorkAndBreakTime newTime) {
+        if (!workSchedule.getStoreUserId().equals(this.storeUserId)) {
+            throw new IllegalArgumentException("storeUserId mismatch");
+        }
+        if (!loadedDates.contains(newDate)) {
+            throw new IllegalArgumentException("scheduleDate not loaded");
+        }
+
+        return validateNoConflict(workSchedule.getId(), newDate, newTime)
+                .onSuccess(ignored -> {
+                    workSchedule.changeScheduleDate(newDate);
+                    workSchedule.changeWorkAndBreakTime(newTime);
+                    schedules.add(workSchedule);
+                })
+                .mapError(existing -> new WorkScheduleRuleViolation.ScheduleConflict(existing.getId()));
+    }
+    private Result<Void, WorkSchedule> validateNoConflict(Long id, LocalDate scheduleDate, WorkAndBreakTime workAndBreakTime) {
         return schedules.stream()
-                .filter(existing ->
-                        existing.getScheduleDate().equals(candidate.getScheduleDate())
-                                || existing.workTimeOverlaps(candidate)
+                .filter(existing -> !existing.getId().equals(id)
+                        && (existing.getScheduleDate().equals(scheduleDate) || existing.workTimeOverlaps(scheduleDate, workAndBreakTime))
                 ).findAny()
                 .map(Result::<Void, WorkSchedule>failure)
                 .orElse(Result.success(null));

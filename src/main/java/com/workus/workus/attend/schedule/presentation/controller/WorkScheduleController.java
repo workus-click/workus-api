@@ -3,11 +3,16 @@ package com.workus.workus.attend.schedule.presentation.controller;
 import com.workus.workus.attend.schedule.application.command.AddWorkScheduleCommand;
 import com.workus.workus.attend.schedule.application.command.BatchAddWorkSchedulesCommand;
 import com.workus.workus.attend.schedule.application.command.BatchAddWorkSchedulesCommand.ScheduleItem;
+import com.workus.workus.attend.schedule.application.command.ChangeWorkScheduleCommand;
 import com.workus.workus.attend.schedule.application.service.AddWorkScheduleService;
+import com.workus.workus.attend.schedule.application.service.ChangeWorkScheduleService;
 import com.workus.workus.attend.schedule.domain.core.CreationType;
 import com.workus.workus.attend.schedule.domain.core.WorkScheduleSource;
+import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation;
+import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation.ScheduleConflict;
 import com.workus.workus.attend.schedule.presentation.controller.dto.AddWorkScheduleRequest;
 import com.workus.workus.attend.schedule.presentation.controller.dto.BatchAddWorkScheduleRequest;
+import com.workus.workus.attend.schedule.presentation.controller.dto.ChangeWorkScheduleRequest;
 import com.workus.workus.attend.schedule.presentation.controller.validation.ValidationSequence;
 import com.workus.workus.attend.schedule.util.WorkAndBreakTimes;
 import com.workus.workus.common.result.Result;
@@ -21,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 
 @RestController
@@ -28,6 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WorkScheduleController {
     private final AddWorkScheduleService addWorkScheduleService;
+    private final ChangeWorkScheduleService changeWorkScheduleService;
 
     @PostMapping
     public ResponseEntity<String> addWorkSchedule(@RequestBody @Validated(ValidationSequence.class) AddWorkScheduleRequest request) {
@@ -42,9 +49,7 @@ public class WorkScheduleController {
         );
 
         return addWorkScheduleService.addWorkSchedule(command)
-                .fold(id -> ResponseEntity.ok(id.toString())
-                    , violation ->ResponseEntity.badRequest().body(violation.toString())
-                );
+                .fold(id -> ResponseEntity.ok(id.toString()), this::mapViolation);
     }
 
     @PostMapping("/batch")
@@ -72,4 +77,22 @@ public class WorkScheduleController {
         return ResponseEntity.ok(results.toString());
     }
 
+    @PutMapping
+    public ResponseEntity<String> changeWorkSchedule(@RequestBody @Validated(ValidationSequence.class)ChangeWorkScheduleRequest request){
+        ChangeWorkScheduleCommand command = new ChangeWorkScheduleCommand(
+                request.workScheduleId(),
+                LocalDate.parse(request.scheduleDate()),
+                WorkAndBreakTimes.parse(request.workTimeStart(), request.workTimeEnd(), request.breakTimeStart(), request.breakTimeEnd()).getOrThrow()
+        );
+
+        return changeWorkScheduleService.changeWorkSchedule(command)
+                .fold(ignored -> ResponseEntity.ok(""), this::mapViolation);
+
+    }
+
+    private ResponseEntity<String> mapViolation(WorkScheduleRuleViolation.CreateAndChange violation) {
+        return switch (violation) {
+            case ScheduleConflict scheduleConflict -> ResponseEntity.status(CONFLICT).body(scheduleConflict.toString());
+        };
+    }
 }

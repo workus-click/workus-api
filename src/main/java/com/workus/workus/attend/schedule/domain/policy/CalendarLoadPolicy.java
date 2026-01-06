@@ -9,7 +9,10 @@ import java.time.LocalDate;
 public class CalendarLoadPolicy {
     private final int EXPAND_DAYS_FOR_CONFLICT_CHECK = 1;
 
-    public DateRange getLoadRangeForConflictCheck(LocalDate scheduleDate) {
-        return new DateRange(scheduleDate.minusDays(EXPAND_DAYS_FOR_CONFLICT_CHECK), scheduleDate.plusDays(EXPAND_DAYS_FOR_CONFLICT_CHECK));
+    public DateRange getLoadRange(LocalDate scheduleDate) {
+        return new DateRange(
+                scheduleDate.minusDays(EXPAND_DAYS_FOR_CONFLICT_CHECK),
+                scheduleDate.plusDays(EXPAND_DAYS_FOR_CONFLICT_CHECK + 1)
+        );
     }
 }

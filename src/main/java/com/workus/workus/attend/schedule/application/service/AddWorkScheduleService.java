@@ -27,8 +27,8 @@ public class AddWorkScheduleService {
     private final WorkScheduleCalendarLoader calendarLoader;
     private final CalendarLoadPolicy calendarLoadPolicy;
 
-    public Result<Long, WorkScheduleRuleViolation.Create> addWorkSchedule(AddWorkScheduleCommand command) {
-        DateRange loadRange = calendarLoadPolicy.getLoadRangeForConflictCheck(command.scheduleDate());
+    public Result<Long, WorkScheduleRuleViolation.CreateAndChange> addWorkSchedule(AddWorkScheduleCommand command) {
+        DateRange loadRange = calendarLoadPolicy.getLoadRange(command.scheduleDate());
         WorkScheduleCalendar calendar = calendarLoader.loadCalendar(command.storeUserId(), loadRange);
 
         return calendar.addSchedule(IdGenerator.nextId(), command)
@@ -39,7 +39,7 @@ public class AddWorkScheduleService {
     public List<Result<Long, FailedAddWorkSchedule>> addWorkSchedules(BatchAddWorkSchedulesCommand command) {
         Set<BatchAddWorkSchedulesCommand.ScheduleItem> schedules = command.schedules();
         List<DateRange> loadRanges = schedules.stream()
-                .map(scheduleItem -> calendarLoadPolicy.getLoadRangeForConflictCheck(scheduleItem.scheduleDate()))
+                .map(scheduleItem -> calendarLoadPolicy.getLoadRange(scheduleItem.scheduleDate()))
                 .toList();
         WorkScheduleCalendar calendar = calendarLoader.loadCalendar(command.storeUserId(), loadRanges);
 
@@ -59,7 +59,7 @@ public class AddWorkScheduleService {
 
     public record FailedAddWorkSchedule(
             LocalDate scheduleDate,
-            WorkScheduleRuleViolation.Create violation
+            WorkScheduleRuleViolation.CreateAndChange violation
     ) {
     }
 }
