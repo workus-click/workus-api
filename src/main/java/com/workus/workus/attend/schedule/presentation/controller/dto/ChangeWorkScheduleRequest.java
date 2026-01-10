@@ -6,12 +6,8 @@ import com.workus.workus.common.presentation.validation.IsoDate;
 import com.workus.workus.common.presentation.validation.IsoTime;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.NonNull;
 
 public record ChangeWorkScheduleRequest(
-    @NotNull(message = "{schedule.workScheduleId.required}")
-    Long workScheduleId,
     @NotBlank(message = "{schedule.scheduleDate.required}")
     @IsoDate
     String scheduleDate,

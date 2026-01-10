@@ -77,10 +77,11 @@ public class WorkScheduleController {
         return ResponseEntity.ok(results.toString());
     }
 
-    @PutMapping
-    public ResponseEntity<String> changeWorkSchedule(@RequestBody @Validated(ValidationSequence.class)ChangeWorkScheduleRequest request){
+    @PutMapping("/{workScheduleId}")
+    public ResponseEntity<String> changeWorkSchedule(@PathVariable Long workScheduleId
+            , @RequestBody @Validated(ValidationSequence.class) ChangeWorkScheduleRequest request){
         ChangeWorkScheduleCommand command = new ChangeWorkScheduleCommand(
-                request.workScheduleId(),
+                workScheduleId,
                 LocalDate.parse(request.scheduleDate()),
                 WorkAndBreakTimes.parse(request.workTimeStart(), request.workTimeEnd(), request.breakTimeStart(), request.breakTimeEnd()).getOrThrow()
         );
@@ -88,6 +89,11 @@ public class WorkScheduleController {
         return changeWorkScheduleService.changeWorkSchedule(command)
                 .fold(ignored -> ResponseEntity.ok(""), this::mapViolation);
 
+    }
+
+    @DeleteMapping("/{workScheduleId}")
+    public ResponseEntity<String> deleteWorkSchedule(@PathVariable Long workScheduleId) {
+        return ResponseEntity.ok("Delete functionality not implemented yet.");
     }
 
     private ResponseEntity<String> mapViolation(WorkScheduleRuleViolation.CreateAndChange violation) {
