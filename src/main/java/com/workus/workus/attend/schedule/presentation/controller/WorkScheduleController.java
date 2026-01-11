@@ -6,10 +6,12 @@ import com.workus.workus.attend.schedule.application.command.BatchAddWorkSchedul
 import com.workus.workus.attend.schedule.application.command.ChangeWorkScheduleCommand;
 import com.workus.workus.attend.schedule.application.service.AddWorkScheduleService;
 import com.workus.workus.attend.schedule.application.service.ChangeWorkScheduleService;
+import com.workus.workus.attend.schedule.application.service.DeleteWorkScheduleService;
 import com.workus.workus.attend.schedule.domain.core.CreationType;
 import com.workus.workus.attend.schedule.domain.core.WorkScheduleSource;
 import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation;
 import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation.ScheduleConflict;
+import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation.ScheduleNotFound;
 import com.workus.workus.attend.schedule.presentation.controller.dto.AddWorkScheduleRequest;
 import com.workus.workus.attend.schedule.presentation.controller.dto.BatchAddWorkScheduleRequest;
 import com.workus.workus.attend.schedule.presentation.controller.dto.ChangeWorkScheduleRequest;
@@ -35,6 +37,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 public class WorkScheduleController {
     private final AddWorkScheduleService addWorkScheduleService;
     private final ChangeWorkScheduleService changeWorkScheduleService;
+    private final DeleteWorkScheduleService deleteWorkScheduleService;
 
     @PostMapping
     public ResponseEntity<String> addWorkSchedule(@RequestBody @Validated(ValidationSequence.class) AddWorkScheduleRequest request) {
@@ -92,8 +95,13 @@ public class WorkScheduleController {
     }
 
     @DeleteMapping("/{workScheduleId}")
-    public ResponseEntity<String> deleteWorkSchedule(@PathVariable Long workScheduleId) {
-        return ResponseEntity.ok("Delete functionality not implemented yet.");
+    public ResponseEntity<?> deleteWorkSchedule(@PathVariable Long workScheduleId) {
+        return deleteWorkScheduleService.deleteWorkSchedule(workScheduleId)
+                .fold(success -> ResponseEntity.noContent().build()
+                        , violation -> switch (violation){
+                            case ScheduleNotFound scheduleNotFound -> ResponseEntity.notFound().build();
+                        }
+                );
     }
 
     private ResponseEntity<String> mapViolation(WorkScheduleRuleViolation.CreateAndChange violation) {
