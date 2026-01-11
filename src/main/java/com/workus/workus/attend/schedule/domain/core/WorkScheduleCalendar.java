@@ -4,7 +4,6 @@ import com.workus.workus.attend.common.vo.DateRange;
 import com.workus.workus.common.result.Result;
 import com.workus.workus.attend.schedule.application.command.AddWorkScheduleCommand;
 import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation;
-import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation.BreakTimeOutOfWorkTimeRange;
 import lombok.NonNull;
 
 import java.time.LocalDate;
@@ -43,15 +42,11 @@ public final class WorkScheduleCalendar {
             throw new IllegalArgumentException("scheduleDate not loaded");
         }
 
-        if(!WorkSchedule.isBreakWithinWork(command.scheduleDate(), command.workTime(), command.breakTime())){
-            return Result.failure(new BreakTimeOutOfWorkTimeRange(command.workTime(), command.breakTime()));
-        }
         WorkSchedule schedule = new WorkSchedule(
                 workScheduleId,
                 command.storeUserId(),
                 command.scheduleDate(),
-                command.workTime(),
-                command.breakTime(),
+                command.workAndBreakTime(),
                 command.source()
         );
 

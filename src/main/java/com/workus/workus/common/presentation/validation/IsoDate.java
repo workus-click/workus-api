@@ -5,7 +5,7 @@ import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
-@Target({ ElementType.FIELD, ElementType.PARAMETER })
+@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = IsoDateValidator.class)
 @Documented

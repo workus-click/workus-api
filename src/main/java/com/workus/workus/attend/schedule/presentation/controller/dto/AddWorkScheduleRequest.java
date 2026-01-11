@@ -1,26 +1,30 @@
 package com.workus.workus.attend.schedule.presentation.controller.dto;
 
 
-import com.workus.workus.common.presentation.validation.IsoDate;
+import com.workus.workus.attend.schedule.presentation.controller.validation.*;
+import com.workus.workus.attend.schedule.util.WorkAndBreakTimes;
 import com.workus.workus.common.presentation.validation.IsoTime;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record AddWorkScheduleRequest(
-    @NotNull(message = "{schedule.storeUserId.required}")
+    @StoreUserIdRequired
     Long storeUserId,
-    @NotBlank(message = "{schedule.scheduleDate.required}")
-    @IsoDate
+    @ScheduleDateRequired
     String scheduleDate,
-    @NotBlank(message = "{schedule.workTimeStart.required}")
-    @IsoTime
+    @WorkTimeStartRequired
     String workTimeStart,
-    @NotBlank(message = "{schedule.workTimeEnd.required}")
-    @IsoTime
+    @WorkTimeEndRequired
     String workTimeEnd,
     @IsoTime
     String breakTimeStart,
     @IsoTime
     String breakTimeEnd
-) {
+    ) {
+    @CompleteBreakTimeRange(groups = {AfterDefault.class})
+    public boolean isValidBreakTime() {
+        return ValidationRules.allOrNone(breakTimeStart, breakTimeEnd);
+    }
+    @BreakTimeWithinWorkTime(groups = {AfterDefault.class})
+    public boolean isBreakTimeWithinWorkTime(){
+        return WorkAndBreakTimes.parse(workTimeStart, workTimeEnd, breakTimeStart, breakTimeEnd).isSuccess();
+    }
 }

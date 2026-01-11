@@ -19,8 +19,7 @@ class WorkScheduleTest {
                 1L,
                 1L,
                 LocalDate.of(2025,1,1),
-                workTime,
-                breakTime,
+                WorkAndBreakTime.create(workTime, breakTime).getOrThrow(),
                 WorkScheduleSource.ofManual()
         );
     }
@@ -48,12 +47,7 @@ class WorkScheduleTest {
                 );
 
                 breakTimesOutsideWork.forEach(breakTime ->
-                        assertThatThrownBy(() -> new WorkSchedule(
-                                workScheduleId,storeUserId,scheduleDate,
-                                workTime,
-                                breakTime,
-                                WorkScheduleSource.ofManual())
-                        ).isInstanceOf(WorkScheduleException.class)
+                        assertThat(WorkAndBreakTime.create(workTime, breakTime).isFailure()).isTrue()
                 );
             }
 
@@ -68,11 +62,7 @@ class WorkScheduleTest {
                         new TimeRange(LocalTime.of(16, 30), LocalTime.of(17, 0))
                 );
                 breakTimesWithinWork.forEach(breakTime ->
-                        assertThatCode(() -> new WorkSchedule(
-                                workScheduleId,storeUserId,scheduleDate
-                                ,workTime,breakTime
-                                ,WorkScheduleSource.ofManual())
-                        ).doesNotThrowAnyException()
+                        assertThat(WorkAndBreakTime.create(workTime,breakTime).isSuccess()).isTrue()
                 );
             }
 
@@ -89,7 +79,7 @@ class WorkScheduleTest {
                 workTimes.forEach(workTime -> assertThatCode(() ->
                         new WorkSchedule(
                                 workScheduleId,storeUserId,scheduleDate,
-                                workTime,null,
+                                WorkAndBreakTime.create(workTime,null).getOrThrow(),
                                 WorkScheduleSource.ofManual()
                         )).doesNotThrowAnyException()
                 );
@@ -234,7 +224,7 @@ class WorkScheduleTest {
 
                 workTimesNotContainingBreakTime.forEach(newWorkTime ->
                         assertThatThrownBy(() -> scheduleWithBreakTime.changeWorkTime(newWorkTime))
-                                .isInstanceOf(BreakTimeOutOfWorkTimeRangeException.class)
+                                .isInstanceOf(WorkScheduleException.class)
                 );
             }
         }
@@ -345,7 +335,7 @@ class WorkScheduleTest {
             invalidBreakTimes.forEach(newBreakTime ->
                     assertThatThrownBy(() -> schedule.changeBreakTime(newBreakTime))
                             .as("newBreakTime=%s", newBreakTime)
-                            .isInstanceOf(BreakTimeOutOfWorkTimeRangeException.class)
+                            .isInstanceOf(WorkScheduleException.class)
             );
         }
 
@@ -369,8 +359,7 @@ class WorkScheduleTest {
                     1L,
                     1L,
                     scheduleDate,
-                    workTime,
-                    null,
+                    WorkAndBreakTime.create(workTime,null).getOrThrow(),
                     WorkScheduleSource.ofManual()
             );
         }

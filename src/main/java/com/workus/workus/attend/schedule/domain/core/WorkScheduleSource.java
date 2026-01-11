@@ -1,5 +1,8 @@
 package com.workus.workus.attend.schedule.domain.core;
 
+import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation;
+import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation.WorkTimeSourceCreation;
+import com.workus.workus.common.result.Result;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,17 +17,19 @@ public final class WorkScheduleSource {
     private Long workTimeId;
 
     private WorkScheduleSource(@NonNull CreationType creationType, Long workTimeId) {
-        if (creationType == CreationType.AUTO && workTimeId == null) {
-            throw new IllegalArgumentException("WorkTimeId must be provided for AUTO creation type");
-        }
-        if (creationType == CreationType.MANUAL && workTimeId != null) {
-            throw new IllegalArgumentException("WorkTimeId must be null for MANUAL creation type");
-        }
         this.creationType = creationType;
         this.workTimeId = workTimeId;
     }
-
-    public static WorkScheduleSource ofAuto(Long workTimeId) {
+    public static Result<WorkScheduleSource, WorkTimeSourceCreation> create(@NonNull CreationType creationType, Long workTimeId){
+        if (creationType == CreationType.AUTO && workTimeId == null) {
+            return Result.failure(new WorkScheduleRuleViolation.AutoSourceMissingWorkTimeId());
+        }
+        if (creationType == CreationType.MANUAL && workTimeId != null) {
+            return Result.failure(new WorkScheduleRuleViolation.ManualSourceWithWorkTimeId());
+        }
+        return Result.success(new WorkScheduleSource(creationType, workTimeId));
+    }
+    public static WorkScheduleSource ofAuto(@NonNull Long workTimeId) {
         return new WorkScheduleSource(CreationType.AUTO, workTimeId);
     }
     public static WorkScheduleSource ofManual() {

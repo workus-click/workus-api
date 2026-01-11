@@ -1,6 +1,7 @@
 package com.workus.workus.attend.schedule.application.service;
 
 import com.workus.workus.attend.common.vo.DateRange;
+import com.workus.workus.attend.schedule.application.command.BatchAddWorkSchedulesCommand;
 import com.workus.workus.attend.schedule.domain.core.WorkSchedule;
 import com.workus.workus.attend.schedule.domain.core.WorkScheduleCalendar;
 import com.workus.workus.common.component.IdGenerator;
@@ -14,6 +15,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -30,5 +34,32 @@ public class AddWorkScheduleService {
         return calendar.addSchedule(IdGenerator.nextId(), command)
                 .onSuccess(repository::save)
                 .map(WorkSchedule::getId);
+    }
+
+    public List<Result<Long, FailedAddWorkSchedule>> addWorkSchedules(BatchAddWorkSchedulesCommand command) {
+        Set<BatchAddWorkSchedulesCommand.ScheduleItem> schedules = command.schedules();
+        List<DateRange> loadRanges = schedules.stream()
+                .map(scheduleItem -> calendarLoadPolicy.getLoadRangeForConflictCheck(scheduleItem.scheduleDate()))
+                .toList();
+        WorkScheduleCalendar calendar = calendarLoader.loadCalendar(command.storeUserId(), loadRanges);
+
+        return schedules.stream()
+                .map(scheduleItem -> new AddWorkScheduleCommand(
+                        command.storeUserId(),
+                        scheduleItem.scheduleDate(),
+                        scheduleItem.workAndBreakTime(),
+                        command.source()
+                ))
+                .map(addCommand -> calendar.addSchedule(IdGenerator.nextId(), addCommand)
+                        .onSuccess(repository::save)
+                        .map(WorkSchedule::getId)
+                        .mapError(violation -> new FailedAddWorkSchedule(addCommand.scheduleDate(), violation))
+                ).toList();
+    }
+
+    public record FailedAddWorkSchedule(
+            LocalDate scheduleDate,
+            WorkScheduleRuleViolation.Create violation
+    ) {
     }
 }

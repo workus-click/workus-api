@@ -15,6 +15,8 @@ import java.util.Objects;
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public final class TimeRange {
+    private static final int DAY_SECONDS = 24 * 60 * 60;
+
     private LocalTime start;
     private LocalTime end;
 
@@ -25,6 +27,18 @@ public final class TimeRange {
 
     public boolean spansNextDay() {
         return end.isBefore(start);
+    }
+    boolean isFullDay() {
+        return start.equals(end);
+    }
+
+    /**
+     * this 범위가 other 범위를 완전히 포함하는지 여부.
+     * 두 TimeRange의 start를 동일날짜로 간주한다.
+     */
+    public boolean contains(@NonNull TimeRange other) {
+        return this.start.toSecondOfDay() <= other.start.toSecondOfDay()
+                && other.endOffset() <= this.endOffset();
     }
 
     @Column
@@ -58,4 +72,7 @@ public final class TimeRange {
                 "end=" + end + ']';
     }
 
+    private int endOffset() {
+        return this.end.toSecondOfDay() + (spansNextDay() || isFullDay() ? DAY_SECONDS : 0);
+    }
 }
