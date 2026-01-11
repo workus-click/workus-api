@@ -3,7 +3,7 @@ package com.workus.workus.attend.config.domain.model;
 import com.workus.workus.attend.config.domain.exception.BreakTimeOutOfWorkTimeRangeException;
 import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.common.entity.BaseEntity;
-import com.workus.workus.schedule.domain.model.TimeRange;
+import com.workus.workus.attend.common.vo.TimeRange;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

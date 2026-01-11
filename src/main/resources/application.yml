@@ -3,6 +3,8 @@ spring:
     name: workus
   profiles:
     default: local   #기본 프로필을 local로 지정
+  messages:
+    encoding: UTF-8
   jpa:
     open-in-view: false
     hibernate:
