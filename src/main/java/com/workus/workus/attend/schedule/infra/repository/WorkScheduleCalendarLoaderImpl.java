@@ -9,6 +9,7 @@ import com.workus.workus.attend.schedule.domain.repository.WorkScheduleCalendarL
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import static com.workus.workus.attend.schedule.domain.core.QWorkSchedule.workSchedule;
@@ -23,14 +24,12 @@ public class WorkScheduleCalendarLoaderImpl implements WorkScheduleCalendarLoade
     }
 
     @Override
-    public WorkScheduleCalendar loadCalendar(Long storeUserId, List<DateRange> loadRanges) {
+    public WorkScheduleCalendar loadCalendar(Long storeUserId, Collection<DateRange> loadRanges) {
         BooleanBuilder scheduleDateBetween = new BooleanBuilder();
         for (DateRange range : loadRanges) {
             scheduleDateBetween.or(
-                workSchedule.scheduleDate.between(
-                    range.start(),
-                    range.end()
-                )
+                workSchedule.scheduleDate.goe(range.start())
+                    .and(workSchedule.scheduleDate.lt(range.end()))
             );
         }
 
