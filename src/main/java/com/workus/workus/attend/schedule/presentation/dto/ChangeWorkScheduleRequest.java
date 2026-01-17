@@ -1,32 +1,26 @@
 package com.workus.workus.attend.schedule.presentation.dto;
 
-import com.workus.workus.attend.schedule.presentation.validation.ValidationRules;
+import com.workus.workus.attend.schedule.presentation.validation.*;
 import com.workus.workus.attend.schedule.util.WorkAndBreakTimes;
-import com.workus.workus.common.presentation.validation.IsoDate;
 import com.workus.workus.common.presentation.validation.IsoTime;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotBlank;
 
 public record ChangeWorkScheduleRequest(
-    @NotBlank(message = "{schedule.scheduleDate.required}")
-    @IsoDate
+    @ScheduleDateRequired
     String scheduleDate,
-    @NotBlank(message = "{schedule.workTimeStart.required}")
-    @IsoTime
+    @WorkTimeStartRequired
     String workTimeStart,
-    @NotBlank(message = "{schedule.workTimeEnd.required}")
-    @IsoTime
+    @WorkTimeEndRequired
     String workTimeEnd,
     @IsoTime
     String breakTimeStart,
     @IsoTime
     String breakTimeEnd
 ) {
-    @AssertTrue(message = "{schedule.breakTime.incompleteRange}")
+    @CompleteBreakTimeRange(groups = {AfterDefault.class})
     public boolean isValidBreakTime() {
         return ValidationRules.allOrNone(breakTimeStart, breakTimeEnd);
     }
-    @AssertTrue(message = "{schedule.breakTime.outOfWorkTimeRange}")
+    @BreakTimeWithinWorkTime(groups = {AfterDefault.class})
     public boolean isBreakTimeWithinWorkTime(){
         return WorkAndBreakTimes.parse(workTimeStart, workTimeEnd, breakTimeStart, breakTimeEnd).isSuccess();
     }
