@@ -1,9 +1,9 @@
-package com.workus.workus.attend.schedule.presentation.controller.validation;
+package com.workus.workus.attend.schedule.presentation.validation;
 
-import com.workus.workus.common.presentation.validation.IsoTime;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -16,9 +16,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Documented
 @Constraint(validatedBy = {})
-@NotBlank(message = "{schedule.workTimeEnd.required}")
-@IsoTime
-public @interface WorkTimeEndRequired {
+@Pattern(regexp = "MANUAL|AUTO", message = "{schedule.creationType.invalid}")
+@NotBlank(message = "{schedule.creationType.required}")
+public @interface ValidCreationType {
     String message() default "";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

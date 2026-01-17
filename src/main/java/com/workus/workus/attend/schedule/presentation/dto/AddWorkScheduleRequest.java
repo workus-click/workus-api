@@ -1,7 +1,7 @@
-package com.workus.workus.attend.schedule.presentation.controller.dto;
+package com.workus.workus.attend.schedule.presentation.dto;
 
 
-import com.workus.workus.attend.schedule.presentation.controller.validation.*;
+import com.workus.workus.attend.schedule.presentation.validation.*;
 import com.workus.workus.attend.schedule.util.WorkAndBreakTimes;
 import com.workus.workus.common.presentation.validation.IsoTime;
 

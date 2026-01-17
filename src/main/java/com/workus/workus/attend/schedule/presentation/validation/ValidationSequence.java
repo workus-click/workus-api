@@ -1,4 +1,4 @@
-package com.workus.workus.attend.schedule.presentation.controller.validation;
+package com.workus.workus.attend.schedule.presentation.validation;
 
 import jakarta.validation.GroupSequence;
 import jakarta.validation.groups.Default;
