@@ -8,10 +8,12 @@ import com.workus.workus.attend.schedule.domain.exception.WorkScheduleException;
 import com.workus.workus.attend.schedule.domain.violation.WorkScheduleRuleViolation.BreakTimeOutOfWorkTimeRange;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.time.LocalDate;
 
 
+@Audited
 @Entity
 @Table(name = "employee_work_schedule")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
