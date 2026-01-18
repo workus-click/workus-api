@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `employee_work_schedule_aud` (
   `work_schedule_id` bigint(20) NOT NULL COMMENT '근무스케줄 ID',
-  `rev` int NOT NULL COMMENT '리비전 ID',
+  `rev` bigint NOT NULL COMMENT '리비전 ID',
   `revtype` tinyint NOT NULL COMMENT '변경유형 (0:INSERT, 1:UPDATE, 2:DELETE)',
   `store_user_id` bigint(20) COMMENT '회사-유저 아이디',
   `schedule_date` date COMMENT '스케줄일자 (YYYY-MM-DD)',
