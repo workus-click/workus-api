@@ -1,15 +1,9 @@
 package com.workus.workus.auth.presentation.controller;
 
-import com.workus.workus.auth.application.command.SignupCommand;
-import com.workus.workus.auth.application.service.LoginService;
-import com.workus.workus.auth.application.service.SignupService;
-import com.workus.workus.auth.presentation.dto.LoginRequest;
-import com.workus.workus.auth.presentation.dto.SignupRequest;
-import com.workus.workus.common.presentation.dto.Response;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import static org.springframework.http.ResponseEntity.*;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,53 +11,71 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.workus.workus.auth.application.command.LoginCommand;
+import com.workus.workus.auth.application.command.LogoutCommand;
+import com.workus.workus.auth.application.command.SignupCommand;
+import com.workus.workus.auth.application.service.AuthService;
+import com.workus.workus.auth.presentation.dto.LoginRequest;
+import com.workus.workus.auth.presentation.dto.SignupRequest;
+import com.workus.workus.common.presentation.dto.APIResponse;
+import com.workus.workus.common.session.WorkusUser;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final SignupService signupService;
-    private final LoginService loginService;
+	private final AuthService authService;
 
-    @GetMapping("/check-id")
-    public Response<Void> checkId(
-            @RequestParam String loginId
-    ) {
-        boolean available = signupService.isLoginIdAvailable(loginId);
-        long code = available ? 0L : -1L;
-        return Response.of(code, "", null);
-    }
+	@PostMapping("/login")
+	public ResponseEntity<APIResponse<Boolean>> login(@Valid @RequestBody LoginRequest request) {
+		LoginCommand command = new LoginCommand(request.loginId(), request.password());
+		return authService.login(command).fold(
+			success -> ok(APIResponse.ok("0", "", true)),
+			violation -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(APIResponse.error(
+					"-1",
+					"",
+					false
+				))
+		);
+	}
 
-    @PostMapping("/signup")
-    public Response<Void> signup(@Valid @RequestBody SignupRequest request) {
-        String email = request.resolveEmail();
+	@PostMapping("/logout")
+	public ResponseEntity<APIResponse<Boolean>> logout(WorkusUser workusUser) {
+		return authService.logout(new LogoutCommand(workusUser)).fold(
+			success -> ok(APIResponse.ok("0", "", true)),
+			failure -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.body(APIResponse.error("-1", "", false))
+		);
+	}
 
-        SignupCommand command = new SignupCommand(
-                request.name(),
-                request.loginId(),
-                request.password(),
-                request.phone(),
-                email,
-                Boolean.TRUE.equals(request.agreeTerms()),
-                Boolean.TRUE.equals(request.agreePrivacy())
-        );
-        boolean created = signupService.signup(command);
-        if (!created) {
-            return Response.of(-2L, "아이디가 이미 사용 중입니다.", null);
-        }
-        return Response.of(0L, "성공", null);
-    }
+	@GetMapping("/check-id")
+	public ResponseEntity<APIResponse<Boolean>> checkId(@RequestParam String loginId) {
+		return authService.isLoginIdAvailable(loginId).fold(
+			success -> ok(APIResponse.ok("0", "", true)),
+			violation -> ResponseEntity.status(HttpStatus.CONFLICT)
+				.body(APIResponse.error("-1", "아이디가 이미 사용 중입니다.", false))
+		);
+	}
 
-    @PostMapping("/login")
-    public Response<Void> login(
-            @Valid @RequestBody LoginRequest request,
-            HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse
-    ) {
-        boolean success = loginService.login(request.loginId(), request.password(), httpRequest, httpResponse);
-        if (!success) {
-            return Response.of(-1L, "아이디 또는 비밀번호가 올바르지 않습니다.", null);
-        }
-
-        return Response.of(0L, "성공", null);
-    }
+	@PostMapping("/signup")
+	public ResponseEntity<APIResponse<Boolean>> signup(@Valid @RequestBody SignupRequest request) {
+		SignupCommand command = new SignupCommand(
+			request.name(),
+			request.loginId(),
+			request.password(),
+			request.phone(),
+			request.resolveEmail(),
+			request.agreeTerms(),
+			request.agreePrivacy()
+		);
+		return authService.signup(command).fold(
+			success -> ok(APIResponse.ok("0", "", true)),
+			violation -> ResponseEntity.badRequest()
+				.body(APIResponse.error("-1", "아이디가 이미 사용 중입니다.", false))
+		);
+	}
 }

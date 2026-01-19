@@ -43,7 +43,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                         .requestMatchers(
-                                "/api/auth/**",
+                                "/api/auth/check-id",
+                                "/api/auth/signup",
+                                "/api/auth/login",
                                 "/api/time",
                                 "/openapi.yaml",
                                 "/openapi/**",
@@ -87,7 +89,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization", "Accept", "Origin", "X-Requested-With"));
+        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization", "Accept", "Origin"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

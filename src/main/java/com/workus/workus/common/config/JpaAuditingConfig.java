@@ -1,10 +1,13 @@
 package com.workus.workus.common.config;
 
-import com.workus.workus.common.component.IdGenerator;
+import com.workus.workus.auth.infrastructure.springsecurity.SpringSecurityUser;
+import com.workus.workus.common.session.WorkusUser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -12,10 +15,20 @@ import java.util.Optional;
 @EnableJpaAuditing
 public class JpaAuditingConfig {
     // @CreatedDate, @LastModifiedDate 지원
-
     @Bean
     public AuditorAware<Long> auditorAware(){
-        // 후에 인증사용자 ID로 변경 필요
-        return () -> Optional.of(IdGenerator.nextId());
+        return () -> Optional.of(resolveAuditorId());
+    }
+    private Long resolveAuditorId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("No authenticated user for auditing");
+        }
+		Object principal = authentication.getPrincipal();
+		if (principal instanceof SpringSecurityUser session) {
+			return session.getUserId();
+		}
+
+        throw new IllegalStateException("Unsupported principal type for auditing");
     }
 }
