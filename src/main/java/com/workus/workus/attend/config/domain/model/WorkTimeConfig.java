@@ -26,20 +26,20 @@ public class WorkTimeConfig extends BaseEntity {
     @Column(name = "work_time_id")
     private Long id;
 
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     private Long storeId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     private EmployeeType workerType;
 
-    @Column(name = "work_time_name", nullable = false)
+    @Column(name = "work_time_name")
     private String title;
 
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "start", column = @Column(name = "start_time", nullable = false)),
-        @AttributeOverride(name = "end", column = @Column(name = "end_time", nullable = false))
+        @AttributeOverride(name = "start", column = @Column(name = "start_time")),
+        @AttributeOverride(name = "end", column = @Column(name = "end_time"))
     })
     private TimeRange workTime;
 
@@ -50,7 +50,6 @@ public class WorkTimeConfig extends BaseEntity {
     })
     private TimeRange breakTime;
 
-    @Column
     private boolean isDeleted;
 
     /**
