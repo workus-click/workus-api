@@ -22,5 +22,15 @@ public class WorkTimeConfigRepositoryImpl implements WorkTimeConfigRepository {
     public List<WorkTimeConfig> findByStoreId(Long storeId) {
         return jpaWorkTimeConfigRepository.findByStoreId(storeId);
     }
+
+    @Override
+    public WorkTimeConfig save(WorkTimeConfig workTimeConfig) {
+        return jpaWorkTimeConfigRepository.save(workTimeConfig);
+    }
+
+    @Override
+    public void delete(WorkTimeConfig workTimeConfig) {
+        jpaWorkTimeConfigRepository.delete(workTimeConfig);
+    }
 }
 

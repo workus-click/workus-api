@@ -123,6 +123,19 @@ public class WorkTimeConfig extends BaseEntity {
         this.breakTime = newBreakTime;
     }
 
+    /**
+     * 제목을 변경합니다.
+     * 
+     * @param newTitle 새로운 제목
+     * @throws IllegalArgumentException 제목이 null이거나 빈 문자열인 경우
+     */
+    public void changeTitle(String newTitle) {
+        if (newTitle == null || newTitle.isBlank()) {
+            throw new IllegalArgumentException("근무시간 설정명은 필수입니다.");
+        }
+        this.title = newTitle;
+    }
+
     public boolean isNextDay() {
         return workTime.spansNextDay();
     }

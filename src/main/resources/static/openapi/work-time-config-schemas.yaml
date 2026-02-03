@@ -1,0 +1,122 @@
+components:
+  schemas:
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
+        data:
+          type: object
+
+    EmployeeType:
+      type: string
+      enum:
+        - PART_TIME
+        - FULL_TIME
+      description: "직원 구분 (PART_TIME: 파트타임, FULL_TIME: 정직원)"
+
+    CreateWorkTimeConfigRequest:
+      type: object
+      required:
+        - storeId
+        - workerType
+        - title
+        - workStartTime
+        - workEndTime
+      properties:
+        storeId:
+          type: integer
+          format: int64
+          description: 매장 ID
+          example: 1
+        workerType:
+          $ref: '#/components/schemas/EmployeeType'
+          example: PART_TIME
+        title:
+          type: string
+          description: 근무시간 설정명
+          example: "오전 파트"
+        workStartTime:
+          type: string
+          format: time
+          description: 근무 시작시간
+          example: "09:00:00"
+        workEndTime:
+          type: string
+          format: time
+          description: 근무 종료시간
+          example: "18:00:00"
+        breakStartTime:
+          type: string
+          format: time
+          description: 휴게 시작시간 (선택)
+          example: "12:00:00"
+        breakEndTime:
+          type: string
+          format: time
+          description: 휴게 종료시간 (선택)
+          example: "13:00:00"
+
+    UpdateWorkTimeConfigRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: 근무시간 설정명
+          example: "오전 파트 (수정)"
+        workStartTime:
+          type: string
+          format: time
+          description: 근무 시작시간
+          example: "09:00:00"
+        workEndTime:
+          type: string
+          format: time
+          description: 근무 종료시간
+          example: "18:00:00"
+        breakStartTime:
+          type: string
+          format: time
+          description: 휴게 시작시간
+          example: "12:00:00"
+        breakEndTime:
+          type: string
+          format: time
+          description: 휴게 종료시간
+          example: "13:00:00"
+
+    WorkTimeConfigResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 근무시간 설정 ID
+        storeId:
+          type: integer
+          format: int64
+          description: 매장 ID
+        workerType:
+          $ref: '#/components/schemas/EmployeeType'
+        title:
+          type: string
+          description: 근무시간 설정명
+        workStartTime:
+          type: string
+          format: time
+          description: 근무 시작시간
+        workEndTime:
+          type: string
+          format: time
+          description: 근무 종료시간
+        breakStartTime:
+          type: string
+          format: time
+          description: 휴게 시작시간
+        breakEndTime:
+          type: string
+          format: time
+          description: 휴게 종료시간

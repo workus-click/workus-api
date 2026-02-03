@@ -8,5 +8,7 @@ import java.util.Optional;
 public interface WorkTimeConfigRepository {
     Optional<WorkTimeConfig> findById(Long id);
     List<WorkTimeConfig> findByStoreId(Long storeId);
+    WorkTimeConfig save(WorkTimeConfig workTimeConfig);
+    void delete(WorkTimeConfig workTimeConfig);
 }
 
