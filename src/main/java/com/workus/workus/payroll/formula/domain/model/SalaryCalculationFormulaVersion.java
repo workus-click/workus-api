@@ -36,10 +36,10 @@ public class SalaryCalculationFormulaVersion extends BaseEntity {
     @Column(name = "version_id")
     private Long id;
 
-    @Column(name = "store_id", nullable = false, updatable = false)
+    @Column(name = "store_id", updatable = false)
     private Long storeId;
 
-    @Column(name = "version_number", nullable = false)
+    @Column(name = "version_number")
     private Integer versionNumber;
 
     // ========== 지급항목 (PayItem) ==========

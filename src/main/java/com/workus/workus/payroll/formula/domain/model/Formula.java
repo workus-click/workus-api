@@ -20,10 +20,10 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Formula {
     @Convert(converter = FormulaTypeConverter.class)
-    @Column(name = "formula_type", nullable = false)
+    @Column(name = "formula_type")
     private FormulaType formulaType;
 
-    @Column(name = "formula", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "formula")
     private String expression;
 
     public Formula(FormulaType formulaType, String expression) {

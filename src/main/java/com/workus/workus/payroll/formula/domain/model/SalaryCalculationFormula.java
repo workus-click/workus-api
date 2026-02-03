@@ -34,7 +34,7 @@ public class SalaryCalculationFormula extends BaseEntity {
     @Column(name = "formula_id")
     private Long id;
 
-    @Column(name = "store_id", nullable = false, updatable = false)
+    @Column(name = "store_id", updatable = false)
     private Long storeId;
 
     @Embedded
