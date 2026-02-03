@@ -4,10 +4,34 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:8080
+tags:
+  - name: 인증
+    description: 인증 관련 API
+  - name: 근무시간 설정
+    description: 근무시간 설정 관리 API
+  - name: 급여 계산식
+    description: 급여 계산식 버전 관리 API
 paths:
+  # Auth
   /api/auth/check-id:
     $ref: './openapi/auth.yaml#/paths/~1api~1auth~1check-id'
   /api/auth/signup:
     $ref: './openapi/auth.yaml#/paths/~1api~1auth~1signup'
   /api/auth/login:
     $ref: './openapi/auth.yaml#/paths/~1api~1auth~1login'
+  # Work Time Config
+  /api/attend/work-time-config:
+    $ref: './openapi/work-time-config.yaml#/paths/~1api~1attend~1work-time-config'
+  /api/attend/work-time-config/{id}:
+    $ref: './openapi/work-time-config.yaml#/paths/~1api~1attend~1work-time-config~1{id}'
+  # Payroll Formula
+  /api/payroll/formula:
+    $ref: './openapi/payroll-formula.yaml#/paths/~1api~1payroll~1formula'
+  /api/payroll/formula/versions:
+    $ref: './openapi/payroll-formula.yaml#/paths/~1api~1payroll~1formula~1versions'
+  /api/payroll/formula/versions/{versionNumber}:
+    $ref: './openapi/payroll-formula.yaml#/paths/~1api~1payroll~1formula~1versions~1{versionNumber}'
+  /api/payroll/formula/detail/{formulaId}:
+    $ref: './openapi/payroll-formula.yaml#/paths/~1api~1payroll~1formula~1detail~1{formulaId}'
+  /api/payroll/formula/{formulaType}:
+    $ref: './openapi/payroll-formula.yaml#/paths/~1api~1payroll~1formula~1{formulaType}'

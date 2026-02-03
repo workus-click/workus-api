@@ -1,6 +1,8 @@
 paths:
   /api/auth/check-id:
     get:
+      tags:
+        - 인증
       summary: '아이디 중복 확인'
       parameters:
         - in: query
@@ -29,6 +31,8 @@ paths:
                     data: null
   /api/auth/signup:
     post:
+      tags:
+        - 인증
       summary: '회원가입'
       requestBody:
         required: true
@@ -69,6 +73,8 @@ paths:
                       loginId: 'must not be blank'
   /api/auth/login:
     post:
+      tags:
+        - 인증
       summary: '로그인'
       requestBody:
         required: true

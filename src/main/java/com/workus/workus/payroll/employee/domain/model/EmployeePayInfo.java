@@ -1,4 +1,4 @@
-package com.workus.workus.payroll.domain.model;
+package com.workus.workus.payroll.employee.domain.model;
 
 import com.workus.workus.common.entity.BaseEntity;
 import jakarta.persistence.*;

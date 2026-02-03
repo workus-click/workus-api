@@ -1,4 +1,4 @@
-package com.workus.workus.payroll.domain.model;
+package com.workus.workus.payroll.employee.domain.model;
 
 public enum PayType {
     HOURLY("시급"),

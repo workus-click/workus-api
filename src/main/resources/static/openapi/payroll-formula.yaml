@@ -1,0 +1,380 @@
+paths:
+  /api/payroll/formula/versions:
+    get:
+      tags:
+        - 급여 계산식
+      summary: '모든 버전 조회'
+      description: '매장의 모든 급여 계산식 버전 이력을 조회합니다.'
+      parameters:
+        - in: query
+          name: storeId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 매장 ID
+          example: 1
+      responses:
+        '200':
+          description: '조회 성공'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './payroll-formula-schemas.yaml#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: './payroll-formula-schemas.yaml#/components/schemas/FormulaVersionResponse'
+              examples:
+                success:
+                  value:
+                    code: 0
+                    message: 성공
+                    data:
+                      - versionId: 123456789
+                        storeId: 1
+                        versionNumber: 3
+                        formulas:
+                          - formulaId: 111
+                            formulaType: BASE_SALARY
+                            category: PAY_ITEM
+                            expression: "WORK_HOURS * HOURLY_RATE"
+                          - formulaId: 333
+                            formulaType: INCOME_TAX
+                            category: DEDUCT_ITEM
+                            expression: "GROSS_SALARY * 0.033"
+                        createdAt: "2026-02-02T15:30:00"
+                      - versionId: 123456788
+                        storeId: 1
+                        versionNumber: 2
+                        formulas:
+                          - formulaId: 100
+                            formulaType: BASE_SALARY
+                            category: PAY_ITEM
+                            expression: "WORK_HOURS * HOURLY_RATE"
+                        createdAt: "2026-02-01T10:00:00"
+
+  /api/payroll/formula/versions/{versionNumber}:
+    get:
+      tags:
+        - 급여 계산식
+      summary: '특정 버전 조회'
+      description: '매장의 특정 버전 급여 계산식을 조회합니다.'
+      parameters:
+        - in: path
+          name: versionNumber
+          required: true
+          schema:
+            type: integer
+          description: 버전 번호
+          example: 2
+        - in: query
+          name: storeId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 매장 ID
+          example: 1
+      responses:
+        '200':
+          description: '조회 성공'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './payroll-formula-schemas.yaml#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: './payroll-formula-schemas.yaml#/components/schemas/FormulaVersionResponse'
+              examples:
+                success:
+                  value:
+                    code: 0
+                    message: 성공
+                    data:
+                      versionId: 123456788
+                      storeId: 1
+                      versionNumber: 2
+                      formulas:
+                        - formulaId: 100
+                          formulaType: BASE_SALARY
+                          category: PAY_ITEM
+                          expression: "WORK_HOURS * HOURLY_RATE"
+                      createdAt: "2026-02-01T10:00:00"
+                notFound:
+                  value:
+                    code: -1
+                    message: "해당 버전이 존재하지 않습니다. versionNumber: 99"
+                    data: null
+
+  /api/payroll/formula/detail/{formulaId}:
+    get:
+      tags:
+        - 급여 계산식
+      summary: '계산식 단건 조회'
+      description: '계산식 ID로 단건 조회합니다.'
+      parameters:
+        - in: path
+          name: formulaId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 계산식 ID
+          example: 123
+      responses:
+        '200':
+          description: '조회 성공'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './payroll-formula-schemas.yaml#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: './payroll-formula-schemas.yaml#/components/schemas/FormulaDetailResponse'
+              examples:
+                success:
+                  value:
+                    code: 0
+                    message: 성공
+                    data:
+                      formulaId: 123
+                      formulaType: BASE_SALARY
+                      category: PAY_ITEM
+                      expression: "WORK_HOURS * HOURLY_RATE"
+                notFound:
+                  value:
+                    code: -1
+                    message: "계산식을 찾을 수 없습니다. formulaId: 999"
+                    data: null
+
+  /api/payroll/formula:
+    get:
+      tags:
+        - 급여 계산식
+      summary: '최신 버전 조회'
+      description: '매장의 최신 급여 계산식 버전을 조회합니다.'
+      parameters:
+        - in: query
+          name: storeId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 매장 ID
+          example: 1
+      responses:
+        '200':
+          description: '조회 성공'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './payroll-formula-schemas.yaml#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: './payroll-formula-schemas.yaml#/components/schemas/FormulaVersionResponse'
+              examples:
+                success:
+                  value:
+                    code: 0
+                    message: 성공
+                    data:
+                      versionId: 123456789
+                      storeId: 1
+                      versionNumber: 3
+                      formulas:
+                        - formulaId: 111
+                          formulaType: BASE_SALARY
+                          category: PAY_ITEM
+                          expression: "WORK_HOURS * HOURLY_RATE"
+                        - formulaId: 222
+                          formulaType: OVERTIME_ALLOWANCE
+                          category: PAY_ITEM
+                          expression: "OVERTIME_HOURS * HOURLY_RATE * 1.5"
+                        - formulaId: 333
+                          formulaType: INCOME_TAX
+                          category: DEDUCT_ITEM
+                          expression: "GROSS_SALARY * 0.033"
+                      createdAt: "2026-02-02T15:30:00"
+                notFound:
+                  value:
+                    code: -1
+                    message: "버전이 존재하지 않습니다."
+                    data: null
+
+    post:
+      tags:
+        - 급여 계산식
+      summary: '계산식 추가'
+      description: '새로운 계산식을 추가하고 새 버전을 생성합니다.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './payroll-formula-schemas.yaml#/components/schemas/AddFormulaRequest'
+            examples:
+              baseSalary:
+                summary: 기본급 추가
+                value:
+                  storeId: 1
+                  formulaType: "BASE_SALARY"
+                  expression: "WORK_HOURS * HOURLY_RATE"
+              incomeTax:
+                summary: 소득세 추가
+                value:
+                  storeId: 1
+                  formulaType: "INCOME_TAX"
+                  expression: "GROSS_SALARY * 0.033"
+      responses:
+        '200':
+          description: '추가 성공'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './payroll-formula-schemas.yaml#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: './payroll-formula-schemas.yaml#/components/schemas/FormulaVersionResponse'
+              examples:
+                success:
+                  value:
+                    code: 0
+                    message: 성공
+                    data:
+                      versionId: 123456790
+                      storeId: 1
+                      versionNumber: 4
+                      formulas:
+                        - formulaId: 555
+                          formulaType: BASE_SALARY
+                          category: PAY_ITEM
+                          expression: "WORK_HOURS * HOURLY_RATE"
+                      createdAt: "2026-02-02T16:00:00"
+                invalidType:
+                  value:
+                    code: -1
+                    message: "잘못된 계산식 타입입니다: INVALID_TYPE"
+                    data: null
+                duplicate:
+                  value:
+                    code: -1
+                    message: "현재 버전에 이미 같은 타입의 계산식이 존재합니다. formulaType: BASE_SALARY"
+                    data: null
+
+  /api/payroll/formula/{formulaType}:
+    put:
+      tags:
+        - 급여 계산식
+      summary: '계산식 교체'
+      description: '기존 계산식을 새 계산식으로 교체하고 새 버전을 생성합니다.'
+      parameters:
+        - in: path
+          name: formulaType
+          required: true
+          schema:
+            type: string
+          description: "계산식 타입 (예: BASE_SALARY, INCOME_TAX)"
+          example: BASE_SALARY
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './payroll-formula-schemas.yaml#/components/schemas/ReplaceFormulaRequest'
+            example:
+              storeId: 1
+              expression: "WORK_HOURS * HOURLY_RATE * 1.1"
+      responses:
+        '200':
+          description: '교체 성공'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './payroll-formula-schemas.yaml#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: './payroll-formula-schemas.yaml#/components/schemas/FormulaVersionResponse'
+              examples:
+                success:
+                  value:
+                    code: 0
+                    message: 성공
+                    data:
+                      versionId: 123456791
+                      storeId: 1
+                      versionNumber: 5
+                      formulas:
+                        - formulaId: 666
+                          formulaType: BASE_SALARY
+                          category: PAY_ITEM
+                          expression: "WORK_HOURS * HOURLY_RATE * 1.1"
+                      createdAt: "2026-02-02T16:30:00"
+                notFound:
+                  value:
+                    code: -1
+                    message: "현재 버전에 해당 타입의 계산식이 없습니다. formulaType: BASE_SALARY"
+                    data: null
+
+    delete:
+      tags:
+        - 급여 계산식
+      summary: '계산식 미사용 처리'
+      description: '계산식을 미사용 처리하고 새 버전을 생성합니다. (실제 데이터는 삭제되지 않음)'
+      parameters:
+        - in: path
+          name: formulaType
+          required: true
+          schema:
+            type: string
+          description: "계산식 타입 (예: BASE_SALARY, INCOME_TAX)"
+          example: BASE_SALARY
+        - in: query
+          name: storeId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 매장 ID
+          example: 1
+      responses:
+        '200':
+          description: '미사용 처리 성공'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './payroll-formula-schemas.yaml#/components/schemas/Response'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: './payroll-formula-schemas.yaml#/components/schemas/FormulaVersionResponse'
+              examples:
+                success:
+                  value:
+                    code: 0
+                    message: 성공
+                    data:
+                      versionId: 123456792
+                      storeId: 1
+                      versionNumber: 6
+                      formulas: []
+                      createdAt: "2026-02-02T17:00:00"
+                notFound:
+                  value:
+                    code: -1
+                    message: "현재 버전에 해당 타입의 계산식이 없습니다. formulaType: BASE_SALARY"
+                    data: null

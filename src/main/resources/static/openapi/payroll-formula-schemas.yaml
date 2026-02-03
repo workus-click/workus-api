@@ -1,0 +1,93 @@
+components:
+  schemas:
+    Response:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
+        data:
+          type: object
+
+    AddFormulaRequest:
+      type: object
+      required:
+        - storeId
+        - formulaType
+        - expression
+      properties:
+        storeId:
+          type: integer
+          format: int64
+          description: 매장 ID
+          example: 1
+        formulaType:
+          type: string
+          description: "계산식 타입 (BASE_SALARY, OVERTIME_ALLOWANCE, NIGHT_SHIFT_ALLOWANCE, HOLIDAY_ALLOWANCE, WEEKLY_HOLIDAY_ALLOWANCE, INCOME_TAX, LOCAL_INCOME_TAX, NATIONAL_PENSION, HEALTH_INSURANCE, LONG_TERM_CARE_INSURANCE, EMPLOYMENT_INSURANCE 등)"
+          example: BASE_SALARY
+        expression:
+          type: string
+          description: 계산식 표현식
+          example: "WORK_HOURS * HOURLY_RATE"
+
+    ReplaceFormulaRequest:
+      type: object
+      required:
+        - storeId
+        - expression
+      properties:
+        storeId:
+          type: integer
+          format: int64
+          description: 매장 ID
+          example: 1
+        expression:
+          type: string
+          description: 새 계산식 표현식
+          example: "WORK_HOURS * HOURLY_RATE * 1.1"
+
+    FormulaDetailResponse:
+      type: object
+      properties:
+        formulaId:
+          type: integer
+          format: int64
+          description: 계산식 ID
+        formulaType:
+          type: string
+          description: "계산식 타입 (예: BASE_SALARY, INCOME_TAX)"
+        category:
+          type: string
+          description: "카테고리 (PAY_ITEM: 지급항목, DEDUCT_ITEM: 공제항목)"
+          enum:
+            - PAY_ITEM
+            - DEDUCT_ITEM
+        expression:
+          type: string
+          description: 계산식 표현식
+
+    FormulaVersionResponse:
+      type: object
+      properties:
+        versionId:
+          type: integer
+          format: int64
+          description: 버전 ID
+        storeId:
+          type: integer
+          format: int64
+          description: 매장 ID
+        versionNumber:
+          type: integer
+          description: 버전 번호
+        formulas:
+          type: array
+          description: 계산식 목록
+          items:
+            $ref: '#/components/schemas/FormulaDetailResponse'
+        createdAt:
+          type: string
+          format: date-time
+          description: 생성일시

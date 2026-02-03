@@ -1,0 +1,162 @@
+### Payroll Formula API 테스트
+### 환경 변수: {{host}} = http://localhost:8080
+
+### ========== 조회 ==========
+
+### 최신 버전 조회
+GET {{host}}/api/payroll/formula?storeId=1
+Content-Type: application/json
+
+### 모든 버전 조회
+GET {{host}}/api/payroll/formula/versions?storeId=1
+Content-Type: application/json
+
+### 특정 버전 조회
+GET {{host}}/api/payroll/formula/versions/1?storeId=1
+Content-Type: application/json
+
+### 계산식 단건 조회
+GET {{host}}/api/payroll/formula/detail/123
+Content-Type: application/json
+
+### ========== 지급항목 계산식 ==========
+
+### 기본급 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "BASE_SALARY",
+  "expression": "WORK_HOURS * HOURLY_RATE"
+}
+
+### 연장근무수당 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "OVERTIME_ALLOWANCE",
+  "expression": "OVERTIME_HOURS * HOURLY_RATE * 1.5"
+}
+
+### 야간근무수당 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "NIGHT_SHIFT_ALLOWANCE",
+  "expression": "NIGHT_HOURS * HOURLY_RATE * 0.5"
+}
+
+### 휴일근무수당 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "HOLIDAY_ALLOWANCE",
+  "expression": "HOLIDAY_HOURS * HOURLY_RATE * 1.5"
+}
+
+### 주휴수당 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "WEEKLY_HOLIDAY_ALLOWANCE",
+  "expression": "WEEKLY_WORK_HOURS / 5 * 8 * HOURLY_RATE"
+}
+
+### ========== 공제항목 계산식 ==========
+
+### 소득세 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "INCOME_TAX",
+  "expression": "GROSS_SALARY * 0.033"
+}
+
+### 지방소득세 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "LOCAL_INCOME_TAX",
+  "expression": "INCOME_TAX * 0.1"
+}
+
+### 국민연금 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "NATIONAL_PENSION",
+  "expression": "GROSS_SALARY * 0.045"
+}
+
+### 건강보험 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "HEALTH_INSURANCE",
+  "expression": "GROSS_SALARY * 0.03545"
+}
+
+### 장기요양보험 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "LONG_TERM_CARE_INSURANCE",
+  "expression": "HEALTH_INSURANCE * 0.1295"
+}
+
+### 고용보험 계산식 추가
+POST {{host}}/api/payroll/formula
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "formulaType": "EMPLOYMENT_INSURANCE",
+  "expression": "GROSS_SALARY * 0.009"
+}
+
+### ========== 계산식 교체 ==========
+
+### 기본급 계산식 교체
+PUT {{host}}/api/payroll/formula/BASE_SALARY
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "expression": "WORK_HOURS * HOURLY_RATE * 1.1"
+}
+
+### 소득세 계산식 교체
+PUT {{host}}/api/payroll/formula/INCOME_TAX
+Content-Type: application/json
+
+{
+  "storeId": 1,
+  "expression": "GROSS_SALARY * 0.035"
+}
+
+### ========== 계산식 미사용 처리 ==========
+
+### 기본급 계산식 미사용 처리
+DELETE {{host}}/api/payroll/formula/BASE_SALARY?storeId=1
+
+### 연장근무수당 계산식 미사용 처리
+DELETE {{host}}/api/payroll/formula/OVERTIME_ALLOWANCE?storeId=1
