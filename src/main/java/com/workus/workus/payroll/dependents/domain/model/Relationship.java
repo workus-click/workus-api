@@ -1,6 +1,10 @@
 package com.workus.workus.payroll.dependents.domain.model;
 
-// TODO: 추후 부양가족 관리를 위해 넣어두었으나 미사용 시 삭제 예정
+/**
+ * TODO: 삭제 예정
+ * - Dependent 엔티티와 함께 삭제 예정
+ * - 현재 프론트에 미반영 상태
+ */
 
 public enum Relationship {
     SPOUSE,     // 배우자

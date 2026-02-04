@@ -1,6 +1,12 @@
 package com.workus.workus.payroll.dependents.domain.model;
 
-// TODO: 추후 부양가족 관리를 위해 넣어두었으나 미사용 시 삭제 예정
+/**
+ * TODO: 삭제 예정
+ * - 현재 프론트에 미반영 상태
+ * - 설계 의도: 다음 년도 졸업, 나이 변경 등으로 부양가족 자격이 달라지는 경우를 트래킹하기 위해 포함
+ * - 현재는 WorkerPay.dependentsCnt로 단순 관리 중
+ * - 프론트 반영 계획이 없어 삭제 예정
+ */
 
 import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.common.entity.BaseEntity;
