@@ -1,5 +1,7 @@
 package com.workus.workus.payroll.dependents.domain.model;
 
+// TODO: 추후 부양가족 관리를 위해 넣어두었으나 미사용 시 삭제 예정
+
 import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.common.entity.BaseEntity;
 import jakarta.persistence.*;
