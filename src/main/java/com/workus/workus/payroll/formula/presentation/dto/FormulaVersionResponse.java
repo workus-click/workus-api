@@ -2,8 +2,8 @@ package com.workus.workus.payroll.formula.presentation.dto;
 
 import com.workus.workus.payroll.formula.domain.model.DeductItemFormulaType;
 import com.workus.workus.payroll.formula.domain.model.PayItemFormulaType;
-import com.workus.workus.payroll.formula.domain.model.SalaryCalculationFormula;
-import com.workus.workus.payroll.formula.domain.model.SalaryCalculationFormulaVersion;
+import com.workus.workus.payroll.formula.domain.model.PayrollFormula;
+import com.workus.workus.payroll.formula.domain.model.PayrollFormulaVersion;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public record FormulaVersionResponse(
     /**
      * 버전 정보만으로 응답 생성 (formulaId만 포함, expression 없음)
      */
-    public static FormulaVersionResponse fromVersionOnly(SalaryCalculationFormulaVersion version) {
+    public static FormulaVersionResponse fromVersionOnly(PayrollFormulaVersion version) {
         List<FormulaDetailResponse> formulas = new ArrayList<>();
 
         for (PayItemFormulaType type : PayItemFormulaType.values()) {
@@ -51,16 +51,16 @@ public record FormulaVersionResponse(
     /**
      * 버전 정보와 계산식 상세 정보로 응답 생성 (expression 포함)
      */
-    public static FormulaVersionResponse from(SalaryCalculationFormulaVersion version, List<SalaryCalculationFormula> formulaList) {
-        Map<Long, SalaryCalculationFormula> formulaMap = formulaList.stream()
-                .collect(Collectors.toMap(SalaryCalculationFormula::getId, Function.identity()));
+    public static FormulaVersionResponse from(PayrollFormulaVersion version, List<PayrollFormula> formulaList) {
+        Map<Long, PayrollFormula> formulaMap = formulaList.stream()
+                .collect(Collectors.toMap(PayrollFormula::getId, Function.identity()));
 
         List<FormulaDetailResponse> formulas = new ArrayList<>();
 
         for (PayItemFormulaType type : PayItemFormulaType.values()) {
             Long formulaId = version.getFormulaId(type);
             if (formulaId != null) {
-                SalaryCalculationFormula formula = formulaMap.get(formulaId);
+                PayrollFormula formula = formulaMap.get(formulaId);
                 if (formula != null) {
                     formulas.add(FormulaDetailResponse.from(formula));
                 }
@@ -70,7 +70,7 @@ public record FormulaVersionResponse(
         for (DeductItemFormulaType type : DeductItemFormulaType.values()) {
             Long formulaId = version.getFormulaId(type);
             if (formulaId != null) {
-                SalaryCalculationFormula formula = formulaMap.get(formulaId);
+                PayrollFormula formula = formulaMap.get(formulaId);
                 if (formula != null) {
                     formulas.add(FormulaDetailResponse.from(formula));
                 }

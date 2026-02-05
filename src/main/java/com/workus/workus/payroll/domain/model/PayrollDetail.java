@@ -57,7 +57,7 @@ public class PayrollDetail extends BaseEntity {
     private String remarks;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "salary_target_id")
+    @JoinColumn(name = "payroll_id")
     @Setter(AccessLevel.PACKAGE)
     private PayrollCalculationResult payrollResult;
 

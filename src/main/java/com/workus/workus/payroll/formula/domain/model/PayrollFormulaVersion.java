@@ -2,9 +2,6 @@ package com.workus.workus.payroll.formula.domain.model;
 
 import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.common.entity.BaseEntity;
-import com.workus.workus.payroll.formula.domain.model.DeductItemFormulaType;
-import com.workus.workus.payroll.formula.domain.model.FormulaType;
-import com.workus.workus.payroll.formula.domain.model.PayItemFormulaType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,7 +18,7 @@ import java.util.Objects;
  * - 각 FormulaType별로 하나의 계산식 ID를 저장
  */
 @Entity
-@Table(name = "salary_calculation_formula_version",
+@Table(name = "payroll_formula_version",
        uniqueConstraints = @UniqueConstraint(
            name = "uk_store_version",
            columnNames = {"store_id", "version_number"}
@@ -31,7 +28,7 @@ import java.util.Objects;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SalaryCalculationFormulaVersion extends BaseEntity {
+public class PayrollFormulaVersion extends BaseEntity {
     @Id
     @Column(name = "version_id")
     private Long id;
@@ -95,8 +92,8 @@ public class SalaryCalculationFormulaVersion extends BaseEntity {
     /**
      * 첫 번째 버전 생성
      */
-    public static SalaryCalculationFormulaVersion createFirstVersion(Long storeId) {
-        return SalaryCalculationFormulaVersion.builder()
+    public static PayrollFormulaVersion createFirstVersion(Long storeId) {
+        return PayrollFormulaVersion.builder()
                 .id(IdGenerator.nextId())
                 .storeId(storeId)
                 .versionNumber(1)
@@ -106,8 +103,8 @@ public class SalaryCalculationFormulaVersion extends BaseEntity {
     /**
      * 현재 버전을 기반으로 새 버전 생성 (모든 계산식 ID 복사)
      */
-    public SalaryCalculationFormulaVersion createNextVersion() {
-        return SalaryCalculationFormulaVersion.builder()
+    public PayrollFormulaVersion createNextVersion() {
+        return PayrollFormulaVersion.builder()
                 .id(IdGenerator.nextId())
                 .storeId(this.storeId)
                 .versionNumber(this.versionNumber + 1)
@@ -228,7 +225,7 @@ public class SalaryCalculationFormulaVersion extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SalaryCalculationFormulaVersion that = (SalaryCalculationFormulaVersion) o;
+        PayrollFormulaVersion that = (PayrollFormulaVersion) o;
         return Objects.equals(id, that.id);
     }
 

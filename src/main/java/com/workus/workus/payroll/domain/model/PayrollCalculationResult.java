@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 급여 계산 결과 (salary_target)
+ * 급여 계산 결과 (payroll)
  */
 @Entity
-@Table(name = "salary_target",
+@Table(name = "payroll",
        uniqueConstraints = @UniqueConstraint(
-           name = "uk_salary_target",
+           name = "uk_payroll",
            columnNames = {"store_user_id", "accrual_start_date", "accrual_end_date"}
        ))
 @Getter
@@ -29,7 +29,7 @@ import java.util.List;
 public class PayrollCalculationResult extends BaseEntity {
 
     @Id
-    @Column(name = "salary_target_id")
+    @Column(name = "payroll_id")
     private Long id;
 
     @Column(name = "store_user_id")

@@ -1,14 +1,14 @@
 package com.workus.workus.payroll.formula.domain.service;
 
-import com.workus.workus.payroll.formula.domain.model.SalaryCalculationFormula;
-import com.workus.workus.payroll.formula.domain.model.SalaryCalculationFormulaVersion;
+import com.workus.workus.payroll.formula.domain.model.PayrollFormula;
+import com.workus.workus.payroll.formula.domain.model.PayrollFormulaVersion;
 import com.workus.workus.payroll.formula.domain.model.Formula;
 import com.workus.workus.payroll.formula.domain.model.FormulaCategory;
 import com.workus.workus.payroll.formula.domain.model.FormulaType;
 import com.workus.workus.payroll.formula.domain.model.FormulaVariable;
 import com.workus.workus.payroll.formula.domain.repository.FormulaVariableRepository;
-import com.workus.workus.payroll.formula.domain.repository.SalaryCalculationFormulaRepository;
-import com.workus.workus.payroll.formula.domain.repository.SalaryCalculationFormulaVersionRepository;
+import com.workus.workus.payroll.formula.domain.repository.PayrollFormulaRepository;
+import com.workus.workus.payroll.formula.domain.repository.PayrollFormulaVersionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,16 +19,16 @@ import java.util.*;
 /**
  * 급여 계산식 생성 및 버전 관리 서비스
  * 
- * - 계산식(SalaryCalculationFormula)은 immutable하며 INSERT만 가능
- * - 계산식 추가/삭제 시 새로운 버전(SalaryCalculationFormulaVersion)이 생성됨
+ * - 계산식(PayrollFormula)은 immutable하며 INSERT만 가능
+ * - 계산식 추가/삭제 시 새로운 버전(PayrollFormulaVersion)이 생성됨
  * - 버전은 각 FormulaType별 계산식 ID를 컬럼으로 저장
  */
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class SalaryCalculationFormulaService {
-    private final SalaryCalculationFormulaRepository salaryCalculationFormulaRepository;
-    private final SalaryCalculationFormulaVersionRepository versionRepository;
+public class PayrollFormulaService {
+    private final PayrollFormulaRepository payrollFormulaRepository;
+    private final PayrollFormulaVersionRepository versionRepository;
     private final FormulaVariableRepository formulaVariableRepository;
 
     /**
@@ -40,7 +40,7 @@ public class SalaryCalculationFormulaService {
      * @return 생성된 버전
      * @throws IllegalArgumentException 기본값이 유효하지 않거나 계산식이 유효하지 않은 경우
      */
-    public SalaryCalculationFormulaVersion addFormula(
+    public PayrollFormulaVersion addFormula(
             Long storeId,
             FormulaType formulaType,
             String expression
@@ -55,7 +55,7 @@ public class SalaryCalculationFormulaService {
         validateFormulaExpression(storeId, formula);
 
         // 현재 최신 버전 조회
-        Optional<SalaryCalculationFormulaVersion> latestVersionOpt = versionRepository.findLatestByStoreId(storeId);
+        Optional<PayrollFormulaVersion> latestVersionOpt = versionRepository.findLatestByStoreId(storeId);
         
         // 현재 버전에 같은 타입의 계산식이 있는지 확인
         if (latestVersionOpt.isPresent() && latestVersionOpt.get().hasFormula(formulaType)) {
@@ -66,17 +66,17 @@ public class SalaryCalculationFormulaService {
         }
 
         // 새 계산식 생성 및 저장 (immutable - INSERT만)
-        SalaryCalculationFormula newFormula = SalaryCalculationFormula.of(storeId, formula);
-        salaryCalculationFormulaRepository.save(newFormula);
+        PayrollFormula newFormula = PayrollFormula.of(storeId, formula);
+        payrollFormulaRepository.save(newFormula);
 
         // 새 버전 생성
-        SalaryCalculationFormulaVersion newVersion;
+        PayrollFormulaVersion newVersion;
         if (latestVersionOpt.isPresent()) {
             // 기존 버전 복사 후 새 계산식 ID 설정
             newVersion = latestVersionOpt.get().createNextVersion();
         } else {
             // 첫 번째 버전 생성
-            newVersion = SalaryCalculationFormulaVersion.createFirstVersion(storeId);
+            newVersion = PayrollFormulaVersion.createFirstVersion(storeId);
         }
         newVersion.setFormulaId(formulaType, newFormula.getId());
 
@@ -92,9 +92,9 @@ public class SalaryCalculationFormulaService {
      * @return 생성된 버전
      * @throws IllegalArgumentException 현재 버전에 해당 타입의 계산식이 없는 경우
      */
-    public SalaryCalculationFormulaVersion deactivateFormula(Long storeId, FormulaType formulaType) {
+    public PayrollFormulaVersion deactivateFormula(Long storeId, FormulaType formulaType) {
         // 현재 최신 버전 조회
-        SalaryCalculationFormulaVersion latestVersion = versionRepository.findLatestByStoreId(storeId)
+        PayrollFormulaVersion latestVersion = versionRepository.findLatestByStoreId(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("버전이 존재하지 않습니다. storeId: " + storeId));
 
         // 현재 버전에 해당 타입의 계산식이 있는지 확인
@@ -106,7 +106,7 @@ public class SalaryCalculationFormulaService {
         }
 
         // 새 버전 생성 (기존 버전 복사 후 해당 타입 null로 설정)
-        SalaryCalculationFormulaVersion newVersion = latestVersion.createNextVersion();
+        PayrollFormulaVersion newVersion = latestVersion.createNextVersion();
         newVersion.setFormulaId(formulaType, null);
 
         return versionRepository.save(newVersion);
@@ -120,7 +120,7 @@ public class SalaryCalculationFormulaService {
      * @param expression 새 계산식 표현식
      * @return 생성된 버전
      */
-    public SalaryCalculationFormulaVersion replaceFormula(
+    public PayrollFormulaVersion replaceFormula(
             Long storeId,
             FormulaType formulaType,
             String expression
@@ -129,7 +129,7 @@ public class SalaryCalculationFormulaService {
         validateDefaultValues(storeId, formulaType, expression);
 
         // 현재 최신 버전 조회
-        SalaryCalculationFormulaVersion latestVersion = versionRepository.findLatestByStoreId(storeId)
+        PayrollFormulaVersion latestVersion = versionRepository.findLatestByStoreId(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("버전이 존재하지 않습니다. storeId: " + storeId));
 
         // 현재 버전에 해당 타입의 계산식이 있는지 확인
@@ -147,11 +147,11 @@ public class SalaryCalculationFormulaService {
         validateFormulaExpression(storeId, formula);
 
         // 새 계산식 생성 및 저장 (immutable - INSERT만)
-        SalaryCalculationFormula newFormula = SalaryCalculationFormula.of(storeId, formula);
-        salaryCalculationFormulaRepository.save(newFormula);
+        PayrollFormula newFormula = PayrollFormula.of(storeId, formula);
+        payrollFormulaRepository.save(newFormula);
 
         // 새 버전 생성 (기존 버전 복사 후 해당 타입의 ID 교체)
-        SalaryCalculationFormulaVersion newVersion = latestVersion.createNextVersion();
+        PayrollFormulaVersion newVersion = latestVersion.createNextVersion();
         newVersion.setFormulaId(formulaType, newFormula.getId());
 
         return versionRepository.save(newVersion);
@@ -161,7 +161,7 @@ public class SalaryCalculationFormulaService {
      * 매장의 최신 버전 조회
      */
     @Transactional(readOnly = true)
-    public Optional<SalaryCalculationFormulaVersion> getLatestVersion(Long storeId) {
+    public Optional<PayrollFormulaVersion> getLatestVersion(Long storeId) {
         return versionRepository.findLatestByStoreId(storeId);
     }
 
@@ -169,7 +169,7 @@ public class SalaryCalculationFormulaService {
      * 매장의 모든 버전 조회
      */
     @Transactional(readOnly = true)
-    public List<SalaryCalculationFormulaVersion> getAllVersions(Long storeId) {
+    public List<PayrollFormulaVersion> getAllVersions(Long storeId) {
         return versionRepository.findAllByStoreId(storeId);
     }
 

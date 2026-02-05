@@ -2,8 +2,6 @@ package com.workus.workus.payroll.formula.domain.model;
 
 import com.workus.workus.common.component.IdGenerator;
 import com.workus.workus.common.entity.BaseEntity;
-import com.workus.workus.payroll.formula.domain.model.Formula;
-import com.workus.workus.payroll.formula.domain.model.FormulaType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,13 +21,13 @@ import java.util.Set;
  * - 계산식 변경이 필요한 경우 새로운 계산식을 생성하고 버전을 올림
  */
 @Entity
-@Table(name = "salary_calculation_formula")
+@Table(name = "payroll_formula")
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SalaryCalculationFormula extends BaseEntity {
+public class PayrollFormula extends BaseEntity {
     @Id
     @Column(name = "formula_id")
     private Long id;
@@ -81,8 +79,8 @@ public class SalaryCalculationFormula extends BaseEntity {
     /**
      * 새로운 계산식 생성 (Immutable - 생성만 가능)
      */
-    public static SalaryCalculationFormula of(Long storeId, Formula formula) {
-        return SalaryCalculationFormula.builder()
+    public static PayrollFormula of(Long storeId, Formula formula) {
+        return PayrollFormula.builder()
                 .id(IdGenerator.nextId())
                 .storeId(storeId)
                 .formula(formula)
@@ -93,7 +91,7 @@ public class SalaryCalculationFormula extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SalaryCalculationFormula that = (SalaryCalculationFormula) o;
+        PayrollFormula that = (PayrollFormula) o;
         return Objects.equals(id, that.id);
     }
 
@@ -102,4 +100,3 @@ public class SalaryCalculationFormula extends BaseEntity {
         return Objects.hash(id);
     }
 }
-

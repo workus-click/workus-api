@@ -4,11 +4,11 @@ import com.workus.workus.common.presentation.dto.Response;
 import com.workus.workus.payroll.formula.domain.model.DeductItemFormulaType;
 import com.workus.workus.payroll.formula.domain.model.FormulaType;
 import com.workus.workus.payroll.formula.domain.model.PayItemFormulaType;
-import com.workus.workus.payroll.formula.domain.model.SalaryCalculationFormula;
-import com.workus.workus.payroll.formula.domain.model.SalaryCalculationFormulaVersion;
-import com.workus.workus.payroll.formula.domain.repository.SalaryCalculationFormulaRepository;
-import com.workus.workus.payroll.formula.domain.repository.SalaryCalculationFormulaVersionRepository;
-import com.workus.workus.payroll.formula.domain.service.SalaryCalculationFormulaService;
+import com.workus.workus.payroll.formula.domain.model.PayrollFormula;
+import com.workus.workus.payroll.formula.domain.model.PayrollFormulaVersion;
+import com.workus.workus.payroll.formula.domain.repository.PayrollFormulaRepository;
+import com.workus.workus.payroll.formula.domain.repository.PayrollFormulaVersionRepository;
+import com.workus.workus.payroll.formula.domain.service.PayrollFormulaService;
 import com.workus.workus.payroll.formula.presentation.dto.AddFormulaRequest;
 import com.workus.workus.payroll.formula.presentation.dto.FormulaDetailResponse;
 import com.workus.workus.payroll.formula.presentation.dto.FormulaVersionResponse;
@@ -26,10 +26,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/payroll/formula")
 @RequiredArgsConstructor
-public class SalaryFormulaController {
-    private final SalaryCalculationFormulaService formulaService;
-    private final SalaryCalculationFormulaRepository formulaRepository;
-    private final SalaryCalculationFormulaVersionRepository versionRepository;
+public class PayrollFormulaController {
+    private final PayrollFormulaService formulaService;
+    private final PayrollFormulaRepository formulaRepository;
+    private final PayrollFormulaVersionRepository versionRepository;
 
     /**
      * 최신 버전 조회 (계산식 상세 정보 포함)
@@ -42,7 +42,7 @@ public class SalaryFormulaController {
         return formulaService.getLatestVersion(storeId)
                 .map(version -> {
                     List<Long> formulaIds = version.getAllFormulaIds();
-                    List<SalaryCalculationFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
+                    List<PayrollFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
                     return Response.of(0L, "성공", FormulaVersionResponse.from(version, formulas));
                 })
                 .orElse(Response.of(-1L, "버전이 존재하지 않습니다.", null));
@@ -56,7 +56,7 @@ public class SalaryFormulaController {
     public Response<List<FormulaVersionResponse>> getAllVersions(
             @Parameter(description = "매장 ID") @RequestParam Long storeId
     ) {
-        List<SalaryCalculationFormulaVersion> versionList = formulaService.getAllVersions(storeId);
+        List<PayrollFormulaVersion> versionList = formulaService.getAllVersions(storeId);
         
         // 모든 버전의 formulaId를 수집
         List<Long> allFormulaIds = versionList.stream()
@@ -65,7 +65,7 @@ public class SalaryFormulaController {
                 .toList();
         
         // 한 번에 조회
-        List<SalaryCalculationFormula> allFormulas = formulaRepository.findAllByIdIn(allFormulaIds);
+        List<PayrollFormula> allFormulas = formulaRepository.findAllByIdIn(allFormulaIds);
         
         List<FormulaVersionResponse> versions = versionList.stream()
                 .map(version -> FormulaVersionResponse.from(version, allFormulas))
@@ -86,7 +86,7 @@ public class SalaryFormulaController {
         return versionRepository.findByStoreIdAndVersionNumber(storeId, versionNumber)
                 .map(version -> {
                     List<Long> formulaIds = version.getAllFormulaIds();
-                    List<SalaryCalculationFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
+                    List<PayrollFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
                     return Response.of(0L, "성공", FormulaVersionResponse.from(version, formulas));
                 })
                 .orElse(Response.of(-1L, "해당 버전이 존재하지 않습니다. versionNumber: " + versionNumber, null));
@@ -118,14 +118,14 @@ public class SalaryFormulaController {
             return Response.of(-1L, "잘못된 계산식 타입입니다: " + request.formulaType(), null);
         }
 
-        SalaryCalculationFormulaVersion version = formulaService.addFormula(
+        PayrollFormulaVersion version = formulaService.addFormula(
                 request.storeId(),
                 formulaType,
                 request.expression()
         );
 
         List<Long> formulaIds = version.getAllFormulaIds();
-        List<SalaryCalculationFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
+        List<PayrollFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
         return Response.of(0L, "성공", FormulaVersionResponse.from(version, formulas));
     }
 
@@ -143,14 +143,14 @@ public class SalaryFormulaController {
             return Response.of(-1L, "잘못된 계산식 타입입니다: " + formulaType, null);
         }
 
-        SalaryCalculationFormulaVersion version = formulaService.replaceFormula(
+        PayrollFormulaVersion version = formulaService.replaceFormula(
                 request.storeId(),
                 type,
                 request.expression()
         );
 
         List<Long> formulaIds = version.getAllFormulaIds();
-        List<SalaryCalculationFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
+        List<PayrollFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
         return Response.of(0L, "성공", FormulaVersionResponse.from(version, formulas));
     }
 
@@ -168,10 +168,10 @@ public class SalaryFormulaController {
             return Response.of(-1L, "잘못된 계산식 타입입니다: " + formulaType, null);
         }
 
-        SalaryCalculationFormulaVersion version = formulaService.deactivateFormula(storeId, type);
+        PayrollFormulaVersion version = formulaService.deactivateFormula(storeId, type);
 
         List<Long> formulaIds = version.getAllFormulaIds();
-        List<SalaryCalculationFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
+        List<PayrollFormula> formulas = formulaRepository.findAllByIdIn(formulaIds);
         return Response.of(0L, "성공", FormulaVersionResponse.from(version, formulas));
     }
 

@@ -1,7 +1,6 @@
 package com.workus.workus.payroll.formula.presentation.dto;
 
-import com.workus.workus.payroll.formula.domain.model.FormulaCategory;
-import com.workus.workus.payroll.formula.domain.model.SalaryCalculationFormula;
+import com.workus.workus.payroll.formula.domain.model.PayrollFormula;
 
 public record FormulaDetailResponse(
         Long formulaId,
@@ -9,7 +8,7 @@ public record FormulaDetailResponse(
         String category,
         String expression
 ) {
-    public static FormulaDetailResponse from(SalaryCalculationFormula formula) {
+    public static FormulaDetailResponse from(PayrollFormula formula) {
         return new FormulaDetailResponse(
                 formula.getId(),
                 ((Enum<?>) formula.getFormulaType()).name(),
