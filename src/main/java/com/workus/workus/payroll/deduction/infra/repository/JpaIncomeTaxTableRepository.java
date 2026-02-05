@@ -1,6 +1,6 @@
-package com.workus.workus.payroll.tax.infra.repository;
+package com.workus.workus.payroll.deduction.infra.repository;
 
-import com.workus.workus.payroll.tax.domain.model.IncomeTaxTable;
+import com.workus.workus.payroll.deduction.domain.model.IncomeTaxTable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

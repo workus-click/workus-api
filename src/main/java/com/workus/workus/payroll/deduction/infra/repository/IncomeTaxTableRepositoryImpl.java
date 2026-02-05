@@ -1,7 +1,7 @@
-package com.workus.workus.payroll.tax.infra.repository;
+package com.workus.workus.payroll.deduction.infra.repository;
 
-import com.workus.workus.payroll.tax.domain.model.IncomeTaxTable;
-import com.workus.workus.payroll.tax.domain.repository.IncomeTaxTableRepository;
+import com.workus.workus.payroll.deduction.domain.model.IncomeTaxTable;
+import com.workus.workus.payroll.deduction.domain.repository.IncomeTaxTableRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

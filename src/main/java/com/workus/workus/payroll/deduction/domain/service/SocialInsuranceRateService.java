@@ -1,7 +1,7 @@
-package com.workus.workus.payroll.tax.domain.service;
+package com.workus.workus.payroll.deduction.domain.service;
 
-import com.workus.workus.payroll.tax.domain.model.SocialInsuranceRate;
-import com.workus.workus.payroll.tax.domain.repository.SocialInsuranceRateRepository;
+import com.workus.workus.payroll.deduction.domain.model.SocialInsuranceRate;
+import com.workus.workus.payroll.deduction.domain.repository.SocialInsuranceRateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

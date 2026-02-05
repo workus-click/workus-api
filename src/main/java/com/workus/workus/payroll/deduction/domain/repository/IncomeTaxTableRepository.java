@@ -1,6 +1,6 @@
-package com.workus.workus.payroll.tax.domain.repository;
+package com.workus.workus.payroll.deduction.domain.repository;
 
-import com.workus.workus.payroll.tax.domain.model.IncomeTaxTable;
+import com.workus.workus.payroll.deduction.domain.model.IncomeTaxTable;
 
 import java.util.List;
 import java.util.Optional;

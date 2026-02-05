@@ -1,6 +1,6 @@
-package com.workus.workus.payroll.tax.infra.repository;
+package com.workus.workus.payroll.deduction.infra.repository;
 
-import com.workus.workus.payroll.tax.domain.model.SocialInsuranceRate;
+import com.workus.workus.payroll.deduction.domain.model.SocialInsuranceRate;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

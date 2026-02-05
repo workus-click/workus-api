@@ -1,4 +1,4 @@
-package com.workus.workus.payroll.tax.domain.model;
+package com.workus.workus.payroll.deduction.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
