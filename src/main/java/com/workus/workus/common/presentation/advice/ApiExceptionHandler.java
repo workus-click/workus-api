@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<APIResponse<Map<String, String>>> handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<APIResponse<?,?>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new LinkedHashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
         }
-        APIResponse<Map<String, String>> response = APIResponse.error("-1", "요청값 오류", errors);
+        APIResponse<?,?> response = APIResponse.error("-1", "요청값 오류", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }

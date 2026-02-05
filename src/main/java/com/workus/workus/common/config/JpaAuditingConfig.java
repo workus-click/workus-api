@@ -1,7 +1,6 @@
 package com.workus.workus.common.config;
 
-import com.workus.workus.auth.infrastructure.springsecurity.SpringSecurityUser;
-import com.workus.workus.common.session.WorkusUser;
+import com.workus.workus.common.session.Actor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -24,11 +23,6 @@ public class JpaAuditingConfig {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalStateException("No authenticated user for auditing");
         }
-		Object principal = authentication.getPrincipal();
-		if (principal instanceof SpringSecurityUser session) {
-			return session.getUserId();
-		}
-
-        throw new IllegalStateException("Unsupported principal type for auditing");
+		return ((Actor) authentication.getPrincipal()).getUserId();
     }
 }

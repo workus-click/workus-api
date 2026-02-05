@@ -1,28 +1,37 @@
-package com.workus.workus.auth.infrastructure.springsecurity;
+package com.workus.workus.common.session;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.Getter;
-import lombok.Setter;
 
-@Setter
 @Getter
-public class SpringSecurityUser implements UserDetails, CredentialsContainer, Serializable {
-
+public class Actor implements Serializable, UserDetails, CredentialsContainer {
 	private final Long userId;
 	private final String loginId;
 	private final String email;
 	private final String name;
 	private final String phone;
 	private String password;
+	private final List<Long> manageStores = new ArrayList<>();
 
-	public SpringSecurityUser(
+	public Actor(
+		Long userId,
+		String loginId,
+		String email,
+		String name,
+		String phone
+	) {
+		this(userId, loginId, null, email, name, phone);
+	}
+
+	public Actor(
 		Long userId,
 		String loginId,
 		String password,
@@ -40,7 +49,7 @@ public class SpringSecurityUser implements UserDetails, CredentialsContainer, Se
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.emptyList();
+		return List.of();
 	}
 
 	@Override

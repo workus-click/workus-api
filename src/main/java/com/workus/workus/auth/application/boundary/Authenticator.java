@@ -1,9 +1,9 @@
 package com.workus.workus.auth.application.boundary;
 
-import com.workus.workus.auth.domain.violation.AuthViolation;
-import com.workus.workus.common.result.Result;
-import com.workus.workus.common.session.WorkusUser;
+import java.util.Optional;
+
+import com.workus.workus.common.session.Actor;
 
 public interface Authenticator {
-	Result<WorkusUser, AuthViolation.Login> authenticate(String username, String password);
+	Optional<Actor> authenticate(String username, String password);
 }
