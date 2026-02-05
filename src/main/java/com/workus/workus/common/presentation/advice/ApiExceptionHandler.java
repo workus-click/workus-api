@@ -1,6 +1,6 @@
 package com.workus.workus.common.presentation.advice;
 
-import com.workus.workus.common.presentation.dto.Response;
+import com.workus.workus.common.presentation.dto.APIResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Response<Map<String, String>>> handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<APIResponse<?,?>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new LinkedHashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
         }
-        Response<Map<String, String>> response = Response.of(-1L, "요청값 오류", errors);
+        APIResponse<?,?> response = APIResponse.error("-1", "요청값 오류", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }
