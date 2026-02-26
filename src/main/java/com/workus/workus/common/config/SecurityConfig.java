@@ -46,7 +46,6 @@ public class SecurityConfig {
                                 "/api/auth/check-id",
                                 "/api/auth/signup",
                                 "/api/auth/login",
-                                "/api/time",
                                 "/openapi.yaml",
                                 "/openapi/**",
                                 "/v3/api-docs",

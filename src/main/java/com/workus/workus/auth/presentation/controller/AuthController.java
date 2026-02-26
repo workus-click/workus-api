@@ -2,6 +2,8 @@ package com.workus.workus.auth.presentation.controller;
 
 import static org.springframework.http.ResponseEntity.*;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workus.workus.auth.application.command.LoginCommand;
-import com.workus.workus.auth.application.command.LogoutCommand;
 import com.workus.workus.auth.application.command.SignupCommand;
+import com.workus.workus.auth.application.model.LoginCompany;
 import com.workus.workus.auth.application.service.AuthService;
 import com.workus.workus.auth.presentation.dto.LoginRequest;
+import com.workus.workus.auth.presentation.dto.MeCompanyResponse;
+import com.workus.workus.auth.presentation.dto.MeResponse;
 import com.workus.workus.auth.presentation.dto.SignupRequest;
 import com.workus.workus.common.presentation.dto.APIResponse;
 import com.workus.workus.common.session.Actor;
@@ -44,9 +48,24 @@ public class AuthController {
 		);
 	}
 
+	@GetMapping("/me")
+	public ResponseEntity<APIResponse<MeResponse, Boolean>> me(@AuthenticationPrincipal Actor workusUser) {
+		List<MeCompanyResponse> companies = authService.getLoginCompanies(workusUser).stream()
+			.map(this::toMeCompanyResponse)
+			.toList();
+
+		MeResponse response = new MeResponse(
+			workusUser.getUserId(),
+			workusUser.getLoginId(),
+			workusUser.getName(),
+			companies
+		);
+		return ok(APIResponse.ok("0", "", response));
+	}
+
 	@PostMapping("/logout")
-	public ResponseEntity<APIResponse<Boolean, Boolean>> logout(@AuthenticationPrincipal Actor workusUser) {
-		return authService.logout(new LogoutCommand(workusUser)).fold(
+	public ResponseEntity<APIResponse<Boolean, Boolean>> logout() {
+		return authService.logout().fold(
 			success -> ok(APIResponse.ok("0", "", true)),
 			failure -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.body(APIResponse.error("-1", "", false))
@@ -78,5 +97,9 @@ public class AuthController {
 			violation -> ResponseEntity.badRequest()
 				.body(APIResponse.error("-1", "아이디가 이미 사용 중입니다.", false))
 		);
+	}
+
+	private MeCompanyResponse toMeCompanyResponse(LoginCompany loginCompany) {
+		return new MeCompanyResponse(loginCompany.storeId(), loginCompany.storeName());
 	}
 }

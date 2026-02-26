@@ -40,7 +40,7 @@ public class SpringSecurityIssuer implements CredentialIssuer {
 	}
 
 	@Override
-	public boolean revoke(Actor workusUser) {
+	public boolean revoke() {
 		try {
 			SecurityContextLogoutHandler handler = new SecurityContextLogoutHandler();
 			handler.logout(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest(),

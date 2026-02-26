@@ -4,5 +4,5 @@ import com.workus.workus.common.session.Actor;
 
 public interface CredentialIssuer {
 	boolean issue(Actor workusUser);
-	boolean revoke(Actor workusUser);
+	boolean revoke();
 }
