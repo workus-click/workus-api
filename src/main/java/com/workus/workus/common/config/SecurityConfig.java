@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -46,7 +47,6 @@ public class SecurityConfig {
                                 "/api/auth/check-id",
                                 "/api/auth/signup",
                                 "/api/auth/login",
-                                "/api/time",
                                 "/openapi.yaml",
                                 "/openapi/**",
                                 "/v3/api-docs",
@@ -54,6 +54,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/store-invites/resolve").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

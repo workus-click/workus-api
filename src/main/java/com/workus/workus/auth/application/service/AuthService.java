@@ -1,5 +1,6 @@
 package com.workus.workus.auth.application.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -7,10 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.workus.workus.auth.application.boundary.Authenticator;
 import com.workus.workus.auth.application.boundary.CredentialIssuer;
+import com.workus.workus.auth.application.boundary.LoginCompanyReader;
 import com.workus.workus.auth.application.boundary.PasswordEncrypter;
 import com.workus.workus.auth.application.command.LoginCommand;
-import com.workus.workus.auth.application.command.LogoutCommand;
 import com.workus.workus.auth.application.command.SignupCommand;
+import com.workus.workus.auth.application.model.LoginCompany;
 import com.workus.workus.auth.domain.model.UserInfo;
 import com.workus.workus.auth.domain.repository.UserInfoRepository;
 import com.workus.workus.auth.domain.violation.AuthViolation;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 	private final Authenticator authenticator;
 	private final CredentialIssuer credentialIssuer;
+	private final LoginCompanyReader loginCompanyReader;
 	private final UserInfoRepository userInfoRepository;
 	private final PasswordEncrypter passwordEncrypter;
 
@@ -36,12 +39,17 @@ public class AuthService {
 		return Result.success(issued);
 	}
 
-	public Result<Boolean, AuthViolation.Session> logout(LogoutCommand logoutCommand) {
-		boolean revoked = credentialIssuer.revoke(logoutCommand.workusUser());
+	public Result<Boolean, AuthViolation.Session> logout() {
+		boolean revoked = credentialIssuer.revoke();
 		if (!revoked) {
 			return Result.failure(new AuthViolation.SessionNotRevoked());
 		}
 		return Result.success(true);
+	}
+
+	@Transactional(readOnly = true)
+	public List<LoginCompany> getLoginCompanies(Actor actor) {
+		return loginCompanyReader.findByUserId(actor.getUserId());
 	}
 
 	@Transactional
