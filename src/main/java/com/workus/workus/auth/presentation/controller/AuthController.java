@@ -100,6 +100,10 @@ public class AuthController {
 	}
 
 	private MeCompanyResponse toMeCompanyResponse(LoginCompany loginCompany) {
-		return new MeCompanyResponse(loginCompany.storeId(), loginCompany.storeName());
+		return new MeCompanyResponse(
+			loginCompany.storeId(),
+			loginCompany.storeName(),
+			loginCompany.storeAddress()
+		);
 	}
 }

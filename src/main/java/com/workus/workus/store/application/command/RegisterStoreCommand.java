@@ -6,7 +6,7 @@ public record RegisterStoreCommand(
     String representativeName,
     String businessType,
     String contactPhoneNumber,
-    String residentNumber,
+    String storeZipCode,
     String storeAddress
 ) {
 }

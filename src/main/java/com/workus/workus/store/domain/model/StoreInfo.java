@@ -49,6 +49,7 @@ public class StoreInfo {
         String ownerName,
         String businessType,
         String ownerPhoneNumber,
+        String storeZipCode,
         String detailedAddress
     ) {
         return StoreInfo.builder()
@@ -58,7 +59,7 @@ public class StoreInfo {
             .ownerName(ownerName)
             .businessType(businessType)
             .ownerPhoneNumber(ownerPhoneNumber)
-            .storeZipCode("00000")
+            .storeZipCode(storeZipCode)
             .detailedAddress(detailedAddress)
             .build();
     }

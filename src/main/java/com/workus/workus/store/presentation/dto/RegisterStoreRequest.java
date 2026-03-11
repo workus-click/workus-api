@@ -19,7 +19,7 @@ public record RegisterStoreRequest(
     String contactPhoneNumber,
 
     @NotBlank
-    String residentNumber,
+    String storeZipCode,
 
     @NotBlank
     String storeAddress

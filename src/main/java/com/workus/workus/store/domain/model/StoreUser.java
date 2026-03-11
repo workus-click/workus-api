@@ -47,7 +47,7 @@ public class StoreUser {
     @Column(name = "emp_name", nullable = false)
     private String employeeName;
 
-    @Column(name = "resident_no", nullable = false)
+    @Column(name = "resident_no", nullable = true)
     private String residentNumber;
 
     @Column(name = "phone", nullable = false)
@@ -107,5 +107,40 @@ public class StoreUser {
             .createdBy(createdBy)
             .modifiedBy(createdBy)
             .build();
+    }
+
+    public static StoreUser ofEmployee(
+        Long userId,
+        Long storeId,
+        String employeeName,
+        String employeePhone,
+        String residentNumber,
+        Long createdBy
+    ) {
+        long storeUserId = IdGenerator.nextId();
+        return StoreUser.builder()
+            .storeUserId(storeUserId)
+            .storeId(storeId)
+            .userId(userId)
+            .userType("E")
+            .employeeCode(resolveEmployeeCode(storeUserId))
+            .employeeName(employeeName)
+            .residentNumber(residentNumber)
+            .phone(employeePhone)
+            .positionCodeId(0L)
+            .jobTypeCodeId(0L)
+            .workTypeCodeId(0L)
+            .hireDate(LocalDate.now())
+            .createdAt(LocalDateTime.now())
+            .modifiedAt(LocalDateTime.now())
+            .createdBy(createdBy)
+            .modifiedBy(createdBy)
+            .build();
+    }
+
+    private static String resolveEmployeeCode(long storeUserId) {
+        String value = Long.toString(storeUserId);
+        String suffix = value.length() > 6 ? value.substring(value.length() - 6) : value;
+        return "EMP_" + suffix;
     }
 }

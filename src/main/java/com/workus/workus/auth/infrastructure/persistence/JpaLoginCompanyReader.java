@@ -19,7 +19,7 @@ public class JpaLoginCompanyReader implements LoginCompanyReader {
 	public List<LoginCompany> findByUserId(Long userId) {
 		@SuppressWarnings("unchecked")
 		List<Object[]> rows = entityManager.createNativeQuery("""
-			SELECT si.store_id, si.store_name
+			SELECT si.store_id, si.store_name, si.detailed_address
 			FROM store_user su
 			JOIN store_info si ON si.store_id = su.store_id
 			WHERE su.user_id = :userId
@@ -29,7 +29,11 @@ public class JpaLoginCompanyReader implements LoginCompanyReader {
 			.getResultList();
 
 		return rows.stream()
-			.map(row -> new LoginCompany(((Number)row[0]).longValue(), (String)row[1]))
+			.map(row -> new LoginCompany(
+				((Number)row[0]).longValue(),
+				(String)row[1],
+				(String)row[2]
+			))
 			.toList();
 	}
 }

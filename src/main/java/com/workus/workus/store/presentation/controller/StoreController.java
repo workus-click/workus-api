@@ -1,6 +1,5 @@
 package com.workus.workus.store.presentation.controller;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import org.springframework.http.ResponseEntity;
@@ -39,7 +38,7 @@ public class StoreController {
             request.representativeName(),
             request.businessType(),
             request.contactPhoneNumber(),
-            request.residentNumber(),
+            request.storeZipCode(),
             request.storeAddress()
         );
 
@@ -51,12 +50,6 @@ public class StoreController {
                     new StoreRegistrationResponse(result.storeId(), result.storeUserId())
                 )),
                 failure -> switch (failure) {
-                    case StoreRegistrationViolation.DuplicateBusinessNumber duplicateBusinessNumber -> ResponseEntity.status(CONFLICT)
-                        .body(APIResponse.error(
-                            "-1",
-                            "이미 등록된 사업자등록번호입니다. (%s)".formatted(duplicateBusinessNumber.businessNumber()),
-                            "DUPLICATE_BUSINESS_NUMBER"
-                        ));
                     case StoreRegistrationViolation.TechnicalFailure technicalFailure -> ResponseEntity.status(INTERNAL_SERVER_ERROR)
                         .body(APIResponse.error(
                             "-1",

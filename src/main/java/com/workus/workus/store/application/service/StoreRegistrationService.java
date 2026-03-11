@@ -39,18 +39,14 @@ public class StoreRegistrationService {
             return Result.failure(new StoreRegistrationViolation.TechnicalFailure("사용자 인증이 필요합니다."));
         }
 
-        String businessNumber = command.businessNumber();
-        if (storeInfoRepository.existsByBusinessNumber(businessNumber)) {
-            return Result.failure(new StoreRegistrationViolation.DuplicateBusinessNumber(businessNumber));
-        }
-
         try {
             StoreInfo storeInfo = StoreInfo.of(
                 command.storeName(),
-                businessNumber,
+                command.businessNumber(),
                 command.representativeName(),
                 command.businessType(),
                 command.contactPhoneNumber(),
+                command.storeZipCode(),
                 command.storeAddress()
             );
             storeInfoRepository.save(storeInfo);
@@ -60,7 +56,7 @@ public class StoreRegistrationService {
                 storeInfo.getStoreId(),
                 command.representativeName(),
                 command.contactPhoneNumber(),
-                command.residentNumber(),
+                null,
                 actor.getUserId()
             );
             storeUserRepository.save(storeOwner);

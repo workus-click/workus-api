@@ -1,5 +1,7 @@
 package com.workus.workus.store.infrastructure.repository;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import com.workus.workus.store.domain.model.StoreInfo;
@@ -19,5 +21,10 @@ public class StoreInfoRepositoryImpl implements StoreInfoRepository {
     @Override
     public void save(StoreInfo storeInfo) {
         jpaStoreInfoRepository.save(storeInfo);
+    }
+
+    @Override
+    public Optional<StoreInfo> findByStoreId(Long storeId) {
+        return jpaStoreInfoRepository.findById(storeId);
     }
 }
